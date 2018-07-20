@@ -77,8 +77,8 @@ def main():
     freeze_weights = False
 
     weights_load_name = "example_load.pth"
-    weights_save_name = "example.pth"
-    ckpt_save_name = "example_ckpt.pth"
+    weights_save_name = "resnet18_cifar100.pth"
+    ckpt_save_name = "resnet18_cifar100_ckpt.pth"
     ############################################
 
     ## model
