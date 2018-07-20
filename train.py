@@ -204,9 +204,9 @@ def main():
 
     ## Train
 
-    best_prec = validate(val_loader, model, criterion, print_freq)
+    best_prec1 = validate(val_loader, model, criterion, print_freq)
     early_stopping_buffer = []
-    early_stopping_buffer.append(best_prec)
+    early_stopping_buffer.append(best_prec1)
 
     for epoch in range(start_epoch, epochs):
         adjust_learning_rate(optimizer, epoch, lr)
