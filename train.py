@@ -46,6 +46,8 @@ def main():
     # SGD
     optimizer_method = 'sgd'
     lr = 2.0
+    lr_dec_factor = 0.2
+    lr_dec_freq = 30
     momentum = 0.0
     weight_decay = 0.00001 
 
@@ -372,9 +374,9 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def adjust_learning_rate(optimizer, epoch, lr):
+def adjust_learning_rate(optimizer, epoch, lr, lr_dec_factor=0.1, lr_dec_freq=30):
     """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
-    lr = lr * (0.1 ** (epoch // 30))
+    lr = lr * (lr_dec_factor ** (epoch // lr_dec_freq))
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
