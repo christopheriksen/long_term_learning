@@ -22,11 +22,11 @@ import utils
 def main():
 
     ############ Modifiable ###################
-    # data_source_dir = "/home/scatha/research_ws/src/lifelong_object_learning/data/training_data"
-    data_source_dir = "/media/ceriksen/Elements/Data/training_data"
+    data_source_dir = "/home/scatha/research_ws/src/lifelong_object_learning/data/training_data"
+    # data_source_dir = "/media/ceriksen/Elements/Data/training_data"
 
-    # weights_dir = "/home/scatha/lifelong_object_learning/long_term_learning/weights"
-    weights_dir = "/home/ceriksen/lifelong_object_learning/long_term_learning/weights"
+    weights_dir = "/home/scatha/lifelong_object_learning/long_term_learning/weights"
+    # weights_dir = "/home/ceriksen/lifelong_object_learning/long_term_learning/weights"
 
 
     # dataset = "imagenet"
