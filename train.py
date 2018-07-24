@@ -31,10 +31,10 @@ def main():
 
     # dataset = "imagenet"
     # dataset = "cifar10"
-    dataset = "cifar100"
-    # dataset = "rgbd-object"
+    # dataset = "cifar100"
+    dataset = "rgbd-object"
 
-    num_classes = 100
+    num_classes = 6
 
 
     arch = "resnet18"
@@ -77,8 +77,8 @@ def main():
     freeze_weights = False
 
     weights_load_name = "example_load.pth"
-    weights_save_name = "resnet18_cifar100.pth"
-    ckpt_save_name = "resnet18_cifar100_ckpt.pth"
+    weights_save_name = "resnet18_rgbd_all.pth"
+    ckpt_save_name = "resnet18_rgbd_all_ckpt.pth"
     ############################################
 
     ## model
@@ -191,6 +191,20 @@ def main():
             ]))
 
 
+    if dataset == "rgbd-object":
+
+        traindir = data_source_dir+"/rgbd-dataset"
+        valdir = data_source_dir+"/rgbd-dataset"
+
+        if imagenet_normalization:
+            train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]])      # ImageNet pretrain
+
+        else:
+            train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, None)
+            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
+            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
+
+
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=batch_size, shuffle=True,
@@ -252,11 +266,11 @@ def main():
 
     # save model
     print ("Saving model")
-    torch.save(model.state_dict(), model_path + model_save_name)
+    torch.save(model.state_dict(), weights_dir + weights_save_name)
 
-    best_checkpoint = torch.load('model_best.pth.tar')
-    model.load_state_dict(best_checkpoint['state_dict'])
-    torch.save(model.state_dict(), model_path + model_save_name_ckpt)
+    # best_checkpoint = torch.load('model_best.pth.tar')
+    # model.load_state_dict(best_checkpoint['state_dict'])
+    # torch.save(model.state_dict(), weights_dir + ckpt_save_name)
 
 
 
