@@ -25,8 +25,8 @@ def main():
     data_source_dir = "/home/scatha/research_ws/src/lifelong_object_learning/data/training_data"
     # data_source_dir = "/media/ceriksen/Elements/Data/training_data"
 
-    weights_dir = "/home/scatha/lifelong_object_learning/long_term_learning/weights"
-    # weights_dir = "/home/ceriksen/lifelong_object_learning/long_term_learning/weights"
+    weights_dir = "/home/scatha/lifelong_object_learning/long_term_learning/weights/"
+    # weights_dir = "/home/ceriksen/lifelong_object_learning/long_term_learning/weights/"
 
 
     # dataset = "imagenet"
@@ -77,8 +77,8 @@ def main():
     freeze_weights = False
 
     weights_load_name = "example_load.pth"
-    weights_save_name = "resnet18_rgbd_all.pth"
-    ckpt_save_name = "resnet18_rgbd_all_ckpt.pth"
+    weights_save_name = "resnet18_rgbd_all_no_normalize.pth"
+    ckpt_save_name = "resnet18_rgbd_all_no_normalize_ckpt.pth"
     ############################################
 
     ## model
@@ -201,7 +201,8 @@ def main():
 
         else:
             # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, None)
-            train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.5465885, 0.50532144, 0.45986757], [1.0, 1.0, 1.0]])
+            train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
+            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.5465885, 0.50532144, 0.45986757], [1.0, 1.0, 1.0]])
             # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.5465885, 0.50532144, 0.45986757], [0.1778812, 0.17233346, 0.17683806]])
 
 
@@ -262,7 +263,7 @@ def main():
             'state_dict': model.state_dict(),
             'best_prec1': best_prec1,
             'optimizer' : optimizer.state_dict(),
-        }, is_best)
+        }, is_best, weights_dir + ckpt_save_name)
 
         print ("Epoch time: " + str(time.time() - start_time))
 
