@@ -200,9 +200,9 @@ def main():
             train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]])      # ImageNet pretrain
 
         else:
-            train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, None)
-            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
-            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
+            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, None)
+            train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.5465885, 0.50532144, 0.45986757], [1.0, 1.0, 1.0]])
+            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.5465885, 0.50532144, 0.45986757], [0.1778812, 0.17233346, 0.17683806]])
 
 
 
@@ -223,6 +223,9 @@ def main():
     early_stopping_buffer.append(best_prec1)
 
     for epoch in range(start_epoch, epochs):
+
+        start_time = time.time()
+
         adjust_learning_rate(optimizer, epoch, lr)
 
         # train for one epoch
@@ -260,6 +263,8 @@ def main():
             'best_prec1': best_prec1,
             'optimizer' : optimizer.state_dict(),
         }, is_best)
+
+        print ("Epoch time: " + str(time.time() - start_time))
 
 
     validate(val_loader, model, criterion, print_freq)
