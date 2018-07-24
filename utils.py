@@ -115,7 +115,7 @@ def load_image_folder(traindir, valdir, normalization=None):
 
         normalize = transforms.Normalize(mean=normalization[0], std=normalization[1])
 
-        train_dataset = datasets.ImageFolder(traindir, train=True, transform= transforms.Compose([
+        train_dataset = datasets.ImageFolder(traindir, transform= transforms.Compose([
             # transforms.Resize(299),
             transforms.Resize(224),
             transforms.CenterCrop(224),
@@ -125,7 +125,7 @@ def load_image_folder(traindir, valdir, normalization=None):
             normalize
             ]))
 
-        val_dataset = datasets.ImageFolder(valdir, train=True, transform= transforms.Compose([
+        val_dataset = datasets.ImageFolder(valdir, transform= transforms.Compose([
             # transforms.Resize(299),
             transforms.Resize(224),
             transforms.CenterCrop(224),
@@ -139,7 +139,7 @@ def load_image_folder(traindir, valdir, normalization=None):
     # otherwise calculate mean, std to normalize by
     else:
 
-        train_dataset = datasets.ImageFolder(traindir, train=True, transform= transforms.Compose([
+        train_dataset = datasets.ImageFolder(traindir, transform= transforms.Compose([
             # transforms.Resize(299),
             transforms.Resize(224),
             transforms.CenterCrop(224),
@@ -170,7 +170,7 @@ def load_image_folder(traindir, valdir, normalization=None):
         normalize = transforms.Normalize(mean=data_mean.tolist(), std = [1.0, 1.0, 1.0])
 
 
-        train_dataset = datasets.ImageFolder(traindir, train=True, transform= transforms.Compose([
+        train_dataset = datasets.ImageFolder(traindir, transform= transforms.Compose([
             # transforms.Resize(299),
             transforms.Resize(224),
             transforms.CenterCrop(224),
@@ -180,7 +180,7 @@ def load_image_folder(traindir, valdir, normalization=None):
             normalize
             ]))
 
-        val_dataset = datasets.ImageFolder(valdir, train=True, transform= transforms.Compose([
+        val_dataset = datasets.ImageFolder(valdir, transform= transforms.Compose([
             # transforms.Resize(299),
             transforms.Resize(224),
             transforms.CenterCrop(224),
