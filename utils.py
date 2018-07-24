@@ -164,8 +164,8 @@ def load_image_folder(traindir, valdir, normalization=None):
         data_mean = np.array(data_mean).mean(axis=0, dtype=np.float32)
         data_std = np.array(data_std).mean(axis=0, dtype=np.float32)    # approx, not true std
 
-        print ("Train mean: str(data_mean)")
-        print ("Train std (approx): str(data_std)")
+        print ("Train mean: " + str(data_mean))
+        print ("Train std (approx): " + str(data_std))
 
         normalize = transforms.Normalize(mean=data_mean.tolist(), std = [1.0, 1.0, 1.0])
 
