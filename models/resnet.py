@@ -152,8 +152,11 @@ class ResNet(nn.Module):
 
         return x, features
 
+    def finetune(block, num_classes):
+        self.fc = nn.Linear(512 * block.expansion, num_classes)
 
-def resnet18(pretrained=False, **kwargs):
+
+def resnet18(pretrained=False, new_num_classes=100, **kwargs):
     """Constructs a ResNet-18 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -161,6 +164,8 @@ def resnet18(pretrained=False, **kwargs):
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+        if new_num_classes != 100:
+            model.finetune(BasicBlock, new_num_classes)
     return model
 
 

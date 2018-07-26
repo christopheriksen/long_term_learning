@@ -304,7 +304,7 @@ def main():
 
    
 
-    model = models.resnet18(pretrained=imagenet_finetune, num_classes=num_classes)
+    model = models.resnet18(pretrained=imagenet_finetune, new_num_classes=num_classes)
     cudnn.benchmark = cudnn_benchmark
     model = torch.nn.DataParallel(model).cuda()
 
