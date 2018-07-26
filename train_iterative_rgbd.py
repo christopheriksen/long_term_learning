@@ -298,7 +298,7 @@ def main():
     subset_dir = "/media/scatha/Data/lifelong_object_learning/training_data/subset_k"
     temp_dir = "/media/scatha/Data/lifelong_object_learning/training_data/temp/"
 
-    early_stopping = True
+    early_stopping = False
     patience = 2
     ############################################
 
