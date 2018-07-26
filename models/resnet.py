@@ -152,7 +152,7 @@ class ResNet(nn.Module):
 
         return x, features
 
-    def finetune(block, num_classes):
+    def finetune(self, block, num_classes):
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
 
