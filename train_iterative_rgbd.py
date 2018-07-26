@@ -292,7 +292,7 @@ def main():
 
     filetype = ".png"
 
-    selection_method = "mean_approx"
+    selection_method = "kmedoids"
     dist_metric = "sqeuclidean"
     train_data_dir_base = "/media/scatha/Data/lifelong_object_learning/training_data/rgbd-iterative/"
     subset_dir = "/media/scatha/Data/lifelong_object_learning/training_data/subset_k"
