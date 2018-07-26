@@ -389,52 +389,51 @@ def main():
 
         # Train
         t0 = time.time()
-        if do_train:
-            best_prec, prec5 = validate(val_loader, model, criterion, print_freq)
-            early_stopping_buffer = []
-            early_stopping_buffer.append(best_prec)
-            for epoch in range(start_epoch, epochs):
+        best_prec, prec5 = validate(val_loader, model, criterion, print_freq)
+        early_stopping_buffer = []
+        early_stopping_buffer.append(best_prec)
+        for epoch in range(start_epoch, epochs):
 
-                # print ()
-                # print ("epoch: " + str(epoch) + "/" + str(epochs))
+            # print ()
+            # print ("epoch: " + str(epoch) + "/" + str(epochs))
 
-                # potentially implemented in optimizer?
-                # optimizer.param_groups, lr = adjust_learning_rate(optimizer, epoch, lr)
+            # potentially implemented in optimizer?
+            # optimizer.param_groups, lr = adjust_learning_rate(optimizer, epoch, lr)
 
-                # train for one epoch
-                train(train_loader, model, criterion, optimizer, epoch, print_freq)
+            # train for one epoch
+            train(train_loader, model, criterion, optimizer, epoch, print_freq)
 
-                # evaluate on validation set
-                prec1, prec5 = validate(val_loader, model, criterion, print_freq)
-                # print (prec1)
+            # evaluate on validation set
+            prec1, prec5 = validate(val_loader, model, criterion, print_freq)
+            # print (prec1)
 
-                # early stopping
-                if early_stopping:
-                    if len(early_stopping_buffer) == (patience+1):
+            # early stopping
+            if early_stopping:
+                if len(early_stopping_buffer) == (patience+1):
 
-                        better = True
-                        for prec in early_stopping_buffer:
-                            if prec1 < prec:
-                                better = False
-                        if better:
-                            print ("Stopping")
-                            break
+                    better = True
+                    for prec in early_stopping_buffer:
+                        if prec1 < prec:
+                            better = False
+                    if better:
+                        print ("Stopping")
+                        break
 
-                        early_stopping_buffer.pop(0)
-                        early_stopping_buffer.append(prec1)
+                    early_stopping_buffer.pop(0)
+                    early_stopping_buffer.append(prec1)
 
-                    else:
-                        early_stopping_buffer.append(prec1)
+                else:
+                    early_stopping_buffer.append(prec1)
 
-                # remember best prec@1 and save checkpoint
-                is_best = prec1 > best_prec
-                best_prec = max(prec1, best_prec)
-                save_checkpoint({
-                    'epoch': epoch + 1,
-                    'arch': arch,
-                    'state_dict': model.state_dict(),
-                    'best_prec': best_prec,
-                }, is_best)
+            # remember best prec@1 and save checkpoint
+            is_best = prec1 > best_prec
+            best_prec = max(prec1, best_prec)
+            save_checkpoint({
+                'epoch': epoch + 1,
+                'arch': arch,
+                'state_dict': model.state_dict(),
+                'best_prec': best_prec,
+            }, is_best)
 
 
             # # save model_name
