@@ -24,7 +24,7 @@ import csv
 import numpy as np
 import torchvision.models
 import utils
-import models.resnet.resnet18 as resnet18
+import resnet.resnet18 as resnet18
 
 
 
