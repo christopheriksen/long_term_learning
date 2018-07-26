@@ -237,7 +237,7 @@ def main():
     # dataset = "cifar100"
     dataset = "rgbd-object"
 
-    num_classes = 100
+    num_classes = 6
 
 
     arch = "resnet18"
@@ -304,7 +304,7 @@ def main():
 
    
 
-    model = models.resnet18()
+    model = models.resnet18(pretrained=imagenet_finetune, num_classes=num_classes)
     cudnn.benchmark = cudnn_benchmark
     model = torch.nn.DataParallel(model).cuda()
 
@@ -342,8 +342,13 @@ def main():
 
 
 
-    normalize = transforms.Normalize(mean=[0.5465885, 0.50532144, 0.45986757],
-                     std=[1.0, 1.0, 1.0])
+    # rgb-d object dataset
+    # normalize = transforms.Normalize(mean=[0.5465885, 0.50532144, 0.45986757],
+                     # std=[1.0, 1.0, 1.0])
+
+    # imagenet
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                    std=[0.229, 0.224, 0.225])
 
     loader = transforms.Compose([transforms.Resize(224), transforms.CenterCrop(224), transforms.ToTensor(), normalize])
 
