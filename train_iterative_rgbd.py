@@ -521,12 +521,8 @@ def main():
 
                 output, features = model(img)
                 features = features.data.cpu().numpy()[0]
-                print (features)
-                print (np.linalg.norm(features))
                 # features = features/np.linalg.norm(features,axis=0)
                 features = features/np.linalg.norm(features)
-                print (features)
-                print ()
 
                 values.append(features)
 
@@ -592,10 +588,12 @@ def main():
 
 
         if selection_method == 'mean_approx':
+
+            D = values.T
                 
-            print (values.shape)            
+            print (D.shape)            
             # Herding procedure : ranking of the potential exemplars
-            mu  = np.mean(values,axis=1)
+            mu  = np.mean(D,axis=1)
             print (mu.shape)
             # alpha_dr_herding[iteration,:,iter_dico] = alpha_dr_herding[iteration,:,iter_dico]*0
             w_t = mu
@@ -603,7 +601,7 @@ def main():
             iter_herding_eff = 0
             # while not(np.sum(alpha_dr_herding[iteration,:,iter_dico]!=0)==min(nb_protos_cl,500)) and iter_herding_eff<1000:
             M = []
-            while (len(new_prototypes) < min(int(dictionary_size/num_classes), len(X_train_per_class[class_index]))):
+            while (len(M) < min(int(subset_size_per_class), num_vals)):
                 tmp_t   = np.dot(w_t,D)
                 ind_max = np.argmax(tmp_t)
                 iter_herding_eff += 1
