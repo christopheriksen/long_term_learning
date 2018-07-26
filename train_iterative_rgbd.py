@@ -275,8 +275,8 @@ def main():
 
     load_weights = False
     load_ckpt = False
-    imagenet_finetune = False
-    imagenet_normalization = False
+    imagenet_finetune = True
+    imagenet_normalization = True
     freeze_weights = False
 
     weights_load_name = "example_load.pth"
@@ -341,14 +341,17 @@ def main():
     shuffle(object_datasets)
 
 
+    if imagenet_normalization:
 
-    # rgb-d object dataset
-    # normalize = transforms.Normalize(mean=[0.5465885, 0.50532144, 0.45986757],
-                     # std=[1.0, 1.0, 1.0])
+        # imagenet
+        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                        std=[0.229, 0.224, 0.225])
+    else:
+        # rgb-d object dataset
+        normalize = transforms.Normalize(mean=[0.5465885, 0.50532144, 0.45986757],
+                          std=[1.0, 1.0, 1.0])
 
-    # imagenet
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                    std=[0.229, 0.224, 0.225])
+
 
     loader = transforms.Compose([transforms.Resize(224), transforms.CenterCrop(224), transforms.ToTensor(), normalize])
 
