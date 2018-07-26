@@ -472,9 +472,9 @@ def main():
             shutil.copy(source_file, dest_file)
 
         # get activations for each subset image
-        weights = model.module.last_linear.weight
-        class_weights = weights.data.cpu().numpy()[object_class_index]
-        class_weights = list(class_weights)
+        # weights = model.module.last_linear.weight
+        # class_weights = weights.data.cpu().numpy()[object_class_index]
+        # class_weights = list(class_weights)
 
         # layer = model.layers[-1]   
         # weights = layer.get_weights()[0]
@@ -486,21 +486,21 @@ def main():
 
 
         # get top num_features weight indices
-        weight_tuples = []
-        for i in range(len(class_weights)):
-            t = [abs(class_weights[i]), i]
-            weight_tuples.append(t)
+        # weight_tuples = []
+        # for i in range(len(class_weights)):
+        #     t = [abs(class_weights[i]), i]
+        #     weight_tuples.append(t)
 
 
-        sorted_weight_tuples = sorted(weight_tuples, key=lambda tup: tup[0])
-        sorted_weight_tuples = list(reversed(sorted_weight_tuples))
-        top_weight_indices = []
-        top_weights = []
-        for i in range(num_features):
-            weight = sorted_weight_tuples[i][0]
-            weight_index = sorted_weight_tuples[i][1]
-            top_weight_indices.append(weight_index)
-            top_weights.append(weight)
+        # sorted_weight_tuples = sorted(weight_tuples, key=lambda tup: tup[0])
+        # sorted_weight_tuples = list(reversed(sorted_weight_tuples))
+        # top_weight_indices = []
+        # top_weights = []
+        # for i in range(num_features):
+        #     weight = sorted_weight_tuples[i][0]
+        #     weight_index = sorted_weight_tuples[i][1]
+        #     top_weight_indices.append(weight_index)
+        #     top_weights.append(weight)
 
         # get values
         values = []
