@@ -281,7 +281,7 @@ def main():
 
     weights_load_name = "example_load.pth"
     weights_save_name = "resnet18_rgbd_iter_kmedoids.pth"
-    ckpt_save_name = "resnet18_cifar100_ckpt.pth"
+    ckpt_save_name = "resnet18_rgbd_iter_kmedoids.pth"
 
     num_subsets = 10
     instances_per_subset = 1
@@ -293,7 +293,7 @@ def main():
     selection_method = "kmedoids"
     dist_metric = "sqeuclidean"
     train_data_dir_base = "/media/scatha/Data/lifelong_object_learning/training_data/rgbd-iterative/"
-    subset_dir = "/media/scatha/Data/lifelong_object_learning/training_data/subset_r"
+    subset_dir = "/media/scatha/Data/lifelong_object_learning/training_data/subset_k"
     temp_dir = "/media/scatha/Data/lifelong_object_learning/training_data/temp/"
     ############################################
 
