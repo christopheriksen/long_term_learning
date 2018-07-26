@@ -288,6 +288,8 @@ def main():
     dictionary_size = 500
     num_exemplars_per_class = int(dictionary_size/num_classes)
 
+    subset_size_per_class = 50
+
     filetype = ".png"
 
     selection_method = "kmedoids"
@@ -523,6 +525,7 @@ def main():
                 print (np.linalg.norm(features,axis=0).shape)
                 features = features/np.linalg.norm(features,axis=0)
                 print (features.shape)
+                print ()
 
                 values.append(features)
 
