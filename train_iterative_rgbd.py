@@ -24,7 +24,7 @@ import csv
 import numpy as np
 import torchvision.models
 import utils
-import resnet.resnet18 as resnet18
+import models
 
 
 
@@ -299,7 +299,7 @@ def main():
 
    
 
-    model = resnet18()
+    model = models.resnet18()
     cudnn.benchmark = cudnn_benchmark
     model = torch.nn.DataParallel(model).cuda()
 
