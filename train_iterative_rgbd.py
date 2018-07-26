@@ -518,6 +518,7 @@ def main():
 
 
                 output, features = model(img)
+                features = features.data.cpu().numpy()
                 print (features.shape)
                 print (np.linalg.norm(features,axis=0).shape)
                 features = features/np.linalg.norm(features,axis=0)
