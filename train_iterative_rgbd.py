@@ -581,10 +581,10 @@ def main():
 
             # use k medoids to get representative images (medoids) 
             print ("Applying K Medoids") 
-            t0 = time.time()  
-            M, C = kmedoids.kMedoids(D, subset_size_per_class)
-            final_time = time.time() - t0
-            print ("K medoids time: " + str(final_time))
+            # t0 = time.time()  
+            M, C = kmedoids.kMedoids(D, min(subset_size_per_class, num_vals))
+            # final_time = time.time() - t0
+            # print ("K medoids time: " + str(final_time))
 
 
         if selection_method == 'mean_approx':
@@ -601,7 +601,7 @@ def main():
             iter_herding_eff = 0
             # while not(np.sum(alpha_dr_herding[iteration,:,iter_dico]!=0)==min(nb_protos_cl,500)) and iter_herding_eff<1000:
             M = []
-            while (len(M) < min(int(subset_size_per_class), num_vals)):
+            while (len(M) < min(subset_size_per_class, num_vals)):
                 tmp_t   = np.dot(w_t,D)
                 ind_max = np.argmax(tmp_t)
                 iter_herding_eff += 1
