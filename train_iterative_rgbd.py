@@ -275,8 +275,8 @@ def main():
 
     load_weights = False
     load_ckpt = False
-    imagenet_finetune = True
-    imagenet_normalization = True
+    imagenet_finetune = False
+    imagenet_normalization = False
     freeze_weights = False
 
     weights_load_name = "example_load.pth"
