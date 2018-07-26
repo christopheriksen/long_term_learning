@@ -295,6 +295,8 @@ def main():
     train_data_dir_base = "/media/scatha/Data/lifelong_object_learning/training_data/rgbd-iterative/"
     subset_dir = "/media/scatha/Data/lifelong_object_learning/training_data/subset_k"
     temp_dir = "/media/scatha/Data/lifelong_object_learning/training_data/temp/"
+
+    early_stopping = False
     ############################################
 
    
