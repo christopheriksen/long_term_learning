@@ -22,11 +22,11 @@ import utils
 def main():
 
     ############ Modifiable ###################
-    data_source_dir = "/home/scatha/research_ws/src/lifelong_object_learning/data/training_data"
-    # data_source_dir = "/media/ceriksen/Elements/Data/training_data"
+    data_source_dir = '/media/scatha/Data/lifelong_object_learning/training_data'
+    # data_source_dir = '/media/ceriksen/Elements/Data/training_data'
 
-    weights_dir = "/home/scatha/lifelong_object_learning/long_term_learning/weights/"
-    # weights_dir = "/home/ceriksen/lifelong_object_learning/long_term_learning/weights/"
+    weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
+    # weights_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/weights/'
 
 
     # dataset = "imagenet"
@@ -34,14 +34,14 @@ def main():
     # dataset = "cifar100"
     dataset = "rgbd-object"
 
-    num_classes = 6
+    num_classes = 51
 
 
-    arch = "resnet18"
-    # arch = "resnet34"
-    # arch = "resnet50"
-    # arch = "resnet101"
-    # arch = "resnet152"
+    arch = 'resnet18'
+    # arch = 'resnet34'
+    # arch = 'resnet50'
+    # arch = 'resnet101'
+    # arch = 'resnet152'
 
     # SGD
     optimizer_method = 'sgd'
@@ -76,9 +76,10 @@ def main():
     imagenet_normalization = False
     freeze_weights = False
 
-    weights_load_name = "example_load.pth"
-    weights_save_name = "resnet18_rgbd_all_no_normalize.pth"
-    ckpt_save_name = "resnet18_rgbd_all_no_normalize_ckpt.pth"
+    weights_load_name = 'example_load.pth'
+    weights_save_name = 'resnet18_rgbd_all_no_normalize.pth'
+    ckpt_save_name = 'resnet18_rgbd_all_no_normalize_ckpt.pth'
+    best_ckpt_save_name = 'resnet18_rgbd_all_no_normalize_best_ckpt.pth'
     ############################################
 
     ## model
@@ -193,17 +194,18 @@ def main():
 
     if dataset == "rgbd-object":
 
-        traindir = data_source_dir+"/rgbd-dataset/train"
-        valdir = data_source_dir+"/rgbd-dataset/train"
+        data_dir = data_source_dir+'/rgbd-dataset/train'
 
         if imagenet_normalization:
-            train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]])      # ImageNet pretrain
+            train_dataset  = utils.load_rgbd_batch(data_dir, [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]])      # ImageNet pretrain
 
         else:
-            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, None)
-            train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
-            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.5465885, 0.50532144, 0.45986757], [1.0, 1.0, 1.0]])
-            # train_dataset, val_dataset = utils.load_image_folder(traindir, valdir, [[0.5465885, 0.50532144, 0.45986757], [0.1778812, 0.17233346, 0.17683806]])
+            train_dataset = utils.load_rgbd_batch(data_dir, None)
+            # train_dataset, val_dataset = utils.load_rgbd_batch(data_dir, [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
+            # train_dataset, val_dataset = utils.load_rgbd_batch(data_dir, [[0.5465885, 0.50532144, 0.45986757], [1.0, 1.0, 1.0]])
+            # train_dataset, val_dataset = utils.load_rgbd_batch(data_dir, [[0.5465885, 0.50532144, 0.45986757], [0.1778812, 0.17233346, 0.17683806]])
+
+        val_dataset = train_dataset
 
 
 
@@ -263,10 +265,13 @@ def main():
             'state_dict': model.state_dict(),
             'best_prec1': best_prec1,
             'optimizer' : optimizer.state_dict(),
-        }, is_best, weights_dir + ckpt_save_name)
+        }, is_best, weights_dir + ckpt_save_name, weights_dir + best_ckpt_save_name)
 
         print ("Epoch time: " + str(time.time() - start_time))
 
+
+    best_checkpoint = torch.load(weights_dir + best_ckpt_save_name)
+    model.load_state_dict(best_checkpoint['state_dict'])
 
     validate(val_loader, model, criterion, print_freq)
 
@@ -298,7 +303,7 @@ def train(train_loader, model, criterion, optimizer, epoch, print_freq):
         target = target.cuda(non_blocking=True)
 
         # compute output
-        output = model(input)
+        output, features = model(input)
         loss = criterion(output, target)
 
         # measure accuracy and record loss
@@ -342,7 +347,7 @@ def validate(val_loader, model, criterion, print_freq):
             target = target.cuda(non_blocking=True)
 
             # compute output
-            output = model(input)
+            output, features = model(input)
             loss = criterion(output, target)
 
             # measure accuracy and record loss
@@ -370,10 +375,10 @@ def validate(val_loader, model, criterion, print_freq):
     return top1.avg
 
 
-def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
+def save_checkpoint(state, is_best, filename='checkpoint.pth.tar', best_filename = 'model_best.pth.tar'):
     torch.save(state, filename)
     if is_best:
-        shutil.copyfile(filename, 'model_best.pth.tar')
+        shutil.copyfile(filename, best_filename)
 
 
 class AverageMeter(object):
