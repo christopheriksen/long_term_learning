@@ -19,16 +19,20 @@ import numpy as np
 import random
 import utils
 import models
+import math
 
 
 def main():
 
     ############ Modifiable ###################
-    data_source_dir = '/home/scatha/research_ws/src/lifelong_object_learning/data/training_data'
-    # data_source_dir = '/media/ceriksen/Elements/Data/training_data'
+    # data_source_dir = '/home/scatha/research_ws/src/lifelong_object_learning/data/training_data'
+    data_source_dir = '/media/ceriksen/Elements/Data/training_data'
 
-    weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
-    # weights_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/weights/'
+    # weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
+    weights_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/weights/'
+
+    # orderings_dir = '/home/scatha/lifelong_object_learning/long_term_learning/orderings/'
+    orderings_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/orderings/'
 
 
     # dataset = 'imagenet'
@@ -87,13 +91,13 @@ def main():
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_rgbd_kmedoids.pth'
-    weights_save_name = 'resnet18_rgbd_kmedoids_'
+    weights_save_name = 'resnet18_rgbd_kmedoids_0.pth'
+    weights_save_name = 'resnet18_rgbd_kmedoids_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
-    subset_instance_order_file = '/home/scatha/lifelong_object_learning/orderings/instance_order_0.txt'
-    test_instances_file = '/home/scatha/iCaRL/lifelong_object_learning/orderings/test_instances_0.txt'
+    subset_instance_order_file = 'instance_order_0.txt'
+    test_instances_file = 'test_instances_0.txt'
     ############################################
 
     ## model
@@ -229,8 +233,8 @@ def main():
 
 
     if dataset == 'rgbd-object':
-        traindir = data_source_dir+'/rgbd-iterative'
-        valdir = data_source_dir+'/rgbd-iterative'
+
+        data_dir = data_source_dir+'/rgbd-dataset_instances/'
 
         if imagenet_normalization:  # ImageNet pretrain
             normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]   
@@ -241,10 +245,10 @@ def main():
             # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
 
 
-        train_datasets_by_subset, test_dataset, train_instance_names_by_subset, test_instance_names = utils.load_instance_subsets_leave_one_out(instances_per_subset, data_dir, normalization)
+        train_datasets_by_subset, test_dataset, train_instance_names_by_subset, test_instance_names = utils.load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, normalization_params)
 
         # write instance ordering
-        f = open(subset_instance_order_file, "w")
+        f = open(orderings_dir + subset_instance_order_file, "w")
         for subset_instances in train_instance_names_by_subset:
             for instance in subset_instances:
                 f.write(instance)
@@ -252,7 +256,7 @@ def main():
         f.close()
 
         # write test instance names
-        f = open(test_instances_file, "w")
+        f = open(orderings_dir + test_instances_file, "w")
         for instance_name in test_instance_names:
             f.write(instance_name)
         f.close()
