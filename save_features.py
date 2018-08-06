@@ -77,7 +77,7 @@ def main():
     imagenet_normalization = False
     freeze_weights = False
 
-    weights_load_name = 'resnet18_rgbd_all_no_normalize_ckpt.pth'
+    weights_load_name = 'resnet18_rgbd_all_no_normalize.pth'
     # weights_save_name = 'resnet18_rgbd_all_no_normalize.pth'
     # ckpt_save_name = 'resnet18_rgbd_all_no_normalize_ckpt.pth'
     # best_ckpt_save_name = 'resnet18_rgbd_all_no_normalize_best_ckpt.pth'
@@ -106,13 +106,13 @@ def main():
     if load_weights:
         state_dict = torch.load(weights_dir + weights_load_name)
 
-        from collections import OrderedDict
-        new_state_dict = OrderedDict()
-        for k, v in state_dict.items():
-            name = k[7:] # remove `module.`
-            new_state_dict[name] = v
-        # load params
-        state_dict = new_state_dict
+        # from collections import OrderedDict
+        # new_state_dict = OrderedDict()
+        # for k, v in state_dict.items():
+        #     name = k[7:] # remove `module.`
+        #     new_state_dict[name] = v
+        # # load params
+        # state_dict = new_state_dict
 
 
         model.load_state_dict(state_dict)
