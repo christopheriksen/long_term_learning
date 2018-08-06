@@ -13,10 +13,11 @@ import torch.optim
 import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-import torchvision.models as models
+import torchvision.models
 
 import numpy as np
 import utils
+import models
 
 
 def main():
