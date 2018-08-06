@@ -194,7 +194,7 @@ def main():
 
     if dataset == "rgbd-object":
 
-        data_dir = data_source_dir+'/rgbd-dataset/train'
+        data_dir = data_source_dir+'/rgbd-dataset/'
 
         if imagenet_normalization:
             train_dataset  = utils.load_rgbd_batch(data_dir, [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]])      # ImageNet pretrain
