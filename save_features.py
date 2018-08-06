@@ -101,10 +101,6 @@ def main():
         model = models.resnet152()
 
 
-    
-    model = torch.nn.DataParallel(model).cuda()
-    cudnn.benchmark = cudnn_benchmark
-
 
     # load saved weights
     if load_weights:
@@ -133,8 +129,8 @@ def main():
               .format(weights_dir+ckpt_save_name, checkpoint['epoch']))
 
 
-    # cudnn.benchmark = cudnn_benchmark
-    # model = torch.nn.DataParallel(model).cuda()
+    model = torch.nn.DataParallel(model).cuda()
+    cudnn.benchmark = cudnn_benchmark
 
 
 
