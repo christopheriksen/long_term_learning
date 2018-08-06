@@ -315,7 +315,7 @@ def load_rgbd_batch(data_dir, normalization):
 
     if normalization == None:
 
-        datasets = []
+        instance_datasets = []
         classes = os.listdir(data_dir)
         num_classes = len(classes)
 
