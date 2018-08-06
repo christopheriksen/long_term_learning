@@ -245,8 +245,8 @@ def main():
         # compute output
         output, features = model(input)
 
-        print (target.shape)
-        print (features.shape)
+        print (target[0])
+        print (features[0].shape)
         print ()
 
         num_data_points += 1
