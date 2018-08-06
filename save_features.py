@@ -114,6 +114,8 @@ def main():
         # # load params
         # state_dict = new_state_dict
 
+        print (state_dict)
+
 
         model.load_state_dict(state_dict)
 
