@@ -237,6 +237,7 @@ def main():
     model.eval()
 
     num_data_points = 0
+    num_features = 512
 
     for i, (input, target) in enumerate(data_loader):
 
@@ -248,18 +249,18 @@ def main():
         target = target.data.cpu().numpy()
         features = features.data.cpu().numpy()
 
-        print (target[0])
-        print (features[0].shape)
-        print ()
+        # print (target[0])
+        # print (features[0].shape)
+        # print ()
 
         num_data_points += 1
 
-        # features_file.write(str(features[0]))
-        # for feature in features[1:]:
+        # features_file.write(str(features[0][0]))
+        # for feature in features[0][1:]:
         #     features_file.write(' ' + str(feature))
         #     features_file.write('\n')
 
-        # labels_file.write(str(target) + '\n')
+        # labels_file.write(str(target[0]) + '\n')
 
     # features_file.close()
     # labels_file.close()
