@@ -230,44 +230,40 @@ def main():
 
 
 
-    # features_file = open(features_filename,'w')
-    # labels_file = open(labels_filename,'w')
-    # features_file.write(str(num_data_points) + ' ' + str(num_features) + '\n')
+
 
     model.eval()
 
-    # num_data_points = 207500
+    num_data_points = 207920
     num_features = 512
 
-    num_data_points = 0
+    features_file = open(features_filename,'w')
+    labels_file = open(labels_filename,'w')
+    features_file.write(str(num_data_points) + ' ' + str(num_features) + '\n')
 
     for i, (input, target) in enumerate(data_loader):
 
-        # target = target.cuda(non_blocking=True)
+        target = target.cuda(non_blocking=True)
 
-        # # compute output
-        # output, features = model(input)
+        # compute output
+        output, features = model(input)
 
-        # target = target.data.cpu().numpy()
-        # features = features.data.cpu().numpy()
+        target = target.data.cpu().numpy()
+        features = features.data.cpu().numpy()
 
-        # print (target[0])
-        # print (features[0].shape)
-        # print ()
+        # num_data_points += 1
 
-        num_data_points += 1
+        features_file.write(str(features[0][0]))
+        for feature in features[0][1:]:
+            features_file.write(' ' + str(feature))
+            features_file.write('\n')
 
-        # features_file.write(str(features[0][0]))
-        # for feature in features[0][1:]:
-        #     features_file.write(' ' + str(feature))
-        #     features_file.write('\n')
+        labels_file.write(str(target[0]) + '\n')
 
-        # labels_file.write(str(target[0]) + '\n')
+    features_file.close()
+    labels_file.close()
 
-    # features_file.close()
-    # labels_file.close()
-
-    print (num_data_points)
+    # print (num_data_points)
 
 
 
