@@ -109,6 +109,16 @@ def main():
     # load saved weights
     if load_weights:
         state_dict = torch.load(weights_dir + weights_load_name)
+
+        from collections import OrderedDict
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            name = k[7:] # remove `module.`
+            new_state_dict[name] = v
+        # load params
+        state_dict = new_state_dict
+
+
         model.load_state_dict(state_dict)
 
 
