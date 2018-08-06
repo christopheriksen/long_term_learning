@@ -241,8 +241,9 @@ def main():
 
         else:
             # normalization_params = None
-            normalization_params = [[0.5465885, 0.50532144, 0.45986757], [1.0, 1.0, 1.0]]
-            # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+            normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+            normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
+            # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
 
         train_datasets_by_subset, test_dataset, train_instance_names_by_subset, test_instance_names = utils.load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, normalization_params)
@@ -313,8 +314,8 @@ def main():
             # train for one epoch
             train(train_loader, model, criterion, optimizer, epoch, print_freq)
 
-            # evaluate on validation set
-            prec1 = validate(val_loader, model, criterion, print_freq)
+            # # evaluate on validation set
+            # prec1 = validate(val_loader, model, criterion, print_freq)
 
 
             # # early stopping
@@ -335,22 +336,22 @@ def main():
             #     else:
             #         early_stopping_buffer.append(prec1)
 
-            # remember best prec@1 and save checkpoint
-            is_best = prec1 > best_prec1
-            best_prec1 = max(prec1, best_prec1)
-            save_checkpoint({
-                'epoch': epoch + 1,
-                'arch': arch,
-                'state_dict': model.state_dict(),
-                'best_prec1': best_prec1,
-                'optimizer' : optimizer.state_dict(),
-            }, is_best, weights_dir + ckpt_save_name, weights_dir + best_ckpt_save_name)
+            # # remember best prec@1 and save checkpoint
+            # is_best = prec1 > best_prec1
+            # best_prec1 = max(prec1, best_prec1)
+            # save_checkpoint({
+            #     'epoch': epoch + 1,
+            #     'arch': arch,
+            #     'state_dict': model.state_dict(),
+            #     'best_prec1': best_prec1,
+            #     'optimizer' : optimizer.state_dict(),
+            # }, is_best, weights_dir + ckpt_save_name, weights_dir + best_ckpt_save_name)
 
 
         # validate(val_loader, model, criterion, print_freq)
 
-        best_checkpoint = torch.load(weights_dir + best_ckpt_save_name)
-        model.load_state_dict(best_checkpoint['state_dict'])
+        # best_checkpoint = torch.load(weights_dir + best_ckpt_save_name)
+        # model.load_state_dict(best_checkpoint['state_dict'])
 
 
 
