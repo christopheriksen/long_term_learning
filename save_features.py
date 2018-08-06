@@ -245,6 +245,9 @@ def main():
         # compute output
         output, features = model(input)
 
+        target = target.data.cpu().numpy()
+        features = features.data.cpu().numpy()
+
         print (target[0])
         print (features[0].shape)
         print ()
