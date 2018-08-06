@@ -343,6 +343,8 @@ def load_rgbd_batch(data_dir, normalization):
 
 
         # calculate mean to normalize by
+        data_mean = []
+        data_std = []
         dataloader = torch.utils.data.DataLoader(dataset, batch_size=128, shuffle=False, num_workers=4)
         for i, (input, target) in enumerate(dataloader):
             # numpy_image = data['image'].numpy()
