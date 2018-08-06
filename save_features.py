@@ -236,18 +236,20 @@ def main():
 
     model.eval()
 
-    num_data_points = 0
+    # num_data_points = 207500
     num_features = 512
+
+    num_data_points = 0
 
     for i, (input, target) in enumerate(data_loader):
 
-        target = target.cuda(non_blocking=True)
+        # target = target.cuda(non_blocking=True)
 
-        # compute output
-        output, features = model(input)
+        # # compute output
+        # output, features = model(input)
 
-        target = target.data.cpu().numpy()
-        features = features.data.cpu().numpy()
+        # target = target.data.cpu().numpy()
+        # features = features.data.cpu().numpy()
 
         # print (target[0])
         # print (features[0].shape)
