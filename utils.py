@@ -336,10 +336,10 @@ def load_rgbd_batch(data_dir, normalization):
                     transforms.ToTensor()      # converts to [0.0, 1.0]
                     # normalize
                     ]))
-                datasets.append(dataset)
+                instance_datasets.append(dataset)
 
         # concat test datasets
-        dataset = torch.utils.data.ConcatDataset(datasets)
+        dataset = torch.utils.data.ConcatDataset(instance_datasets)
 
 
         # calculate mean to normalize by
@@ -361,7 +361,7 @@ def load_rgbd_batch(data_dir, normalization):
 
 
 
-        datasets = []
+        instance_datasets = []
 
         # load datasets by instance
         for i in range(num_classes):
@@ -380,16 +380,16 @@ def load_rgbd_batch(data_dir, normalization):
                     transforms.ToTensor(),      # converts to [0.0, 1.0]
                     normalize
                     ]))
-                datasets.append(dataset)
+                instance_datasets.append(dataset)
 
         # concat test datasets
-        normalized_dataset = torch.utils.data.ConcatDataset(datasets)
+        normalized_dataset = torch.utils.data.ConcatDataset(instance_datasets)
 
 
     else:
 
         normalize = transforms.Normalize(mean=normalization[0], std=normalization[1])
-        datasets = []
+        instance_datasets = []
         classes = os.listdir(data_dir)
         num_classes = len(classes)
 
@@ -410,10 +410,10 @@ def load_rgbd_batch(data_dir, normalization):
                     transforms.ToTensor(),      # converts to [0.0, 1.0]
                     normalize
                     ]))
-                datasets.append(dataset)
+                instance_datasets.append(dataset)
 
         # concat test datasets
-        normalized_dataset = torch.utils.data.ConcatDataset(datasets)
+        normalized_dataset = torch.utils.data.ConcatDataset(instance_datasets)
 
 
     return normalized_dataset
