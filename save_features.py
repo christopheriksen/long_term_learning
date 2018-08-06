@@ -100,8 +100,10 @@ def main():
     if arch == 'resnet152':
         model = models.resnet152()
 
-    cudnn.benchmark = cudnn_benchmark
+
+    
     model = torch.nn.DataParallel(model).cuda()
+    cudnn.benchmark = cudnn_benchmark
 
 
     # load saved weights
