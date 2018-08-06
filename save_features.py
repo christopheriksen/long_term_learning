@@ -109,7 +109,6 @@ def main():
         from collections import OrderedDict
         new_state_dict = OrderedDict()
         for k, v in state_dict.items():
-            print (k)
             name = k[7:] # remove `module.`
             new_state_dict[name] = v
         # load params
