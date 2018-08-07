@@ -82,8 +82,8 @@ def main():
     # ckpt_save_name = 'resnet18_rgbd_all_no_normalize_ckpt.pth'
     # best_ckpt_save_name = 'resnet18_rgbd_all_no_normalize_best_ckpt.pth'
 
-    features_file = '/home/scatha/lifelong_object_learning/long_term_learning/pytorch_rgbd_features.txt'
-    labels_file = '/home/scatha/lifelong_object_learning/long_term_learning/pytorch_rgbd_labels.txt'
+    features_filename = '/home/scatha/lifelong_object_learning/long_term_learning/pytorch_rgbd_features.txt'
+    labels_filename = '/home/scatha/lifelong_object_learning/long_term_learning/pytorch_rgbd_labels.txt'
     ############################################
 
     ## model
