@@ -78,9 +78,9 @@ def main():
     freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_rgbd_all_no_normalize.pth'
-    ckpt_save_name = 'resnet18_rgbd_all_no_normalize_ckpt.pth'
-    best_ckpt_save_name = 'resnet18_rgbd_all_no_normalize_best_ckpt.pth'
+    weights_save_name = 'resnet18_rgbd_all.pth'
+    ckpt_save_name = 'resnet18_rgbd_all.pth'
+    best_ckpt_save_name = 'resnet18_rgbd_all_best_ckpt.pth'
     ############################################
 
     ## model
@@ -222,9 +222,9 @@ def main():
 
     ## Train
 
-    best_prec1 = validate(val_loader, model, criterion, print_freq)
-    early_stopping_buffer = []
-    early_stopping_buffer.append(best_prec1)
+    # best_prec1 = validate(val_loader, model, criterion, print_freq)
+    # early_stopping_buffer = []
+    # early_stopping_buffer.append(best_prec1)
 
     for epoch in range(start_epoch, epochs):
 
