@@ -270,15 +270,17 @@ def main():
 
         print ("Epoch time: " + str(time.time() - start_time))
 
+    # save model
+    print ("Saving model")
+    torch.save(model.state_dict(), weights_dir + weights_save_name)
+
 
     # best_checkpoint = torch.load(weights_dir + best_ckpt_save_name)
     # model.load_state_dict(best_checkpoint['state_dict'])
 
     validate(val_loader, model, criterion, print_freq)
 
-    # save model
-    print ("Saving model")
-    torch.save(model.state_dict(), weights_dir + weights_save_name)
+
 
     # best_checkpoint = torch.load('model_best.pth.tar')
     # model.load_state_dict(best_checkpoint['state_dict'])
