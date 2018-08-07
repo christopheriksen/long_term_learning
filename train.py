@@ -202,9 +202,9 @@ def main():
 
         else:
             # train_dataset = utils.load_rgbd_batch(data_dir, None)
-            # train_dataset, val_dataset = utils.load_rgbd_batch(data_dir, [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
-            train_dataset, val_dataset = utils.load_rgbd_batch(data_dir, [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]])
-            # train_dataset, val_dataset = utils.load_rgbd_batch(data_dir, [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]])
+            # train_dataset = utils.load_rgbd_batch(data_dir, [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
+            train_dataset = utils.load_rgbd_batch(data_dir, [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]])
+            # train_dataset = utils.load_rgbd_batch(data_dir, [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]])
 
         val_dataset = train_dataset
 
