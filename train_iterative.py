@@ -381,12 +381,12 @@ def main():
             if normalize_features:
                 features = features/np.linalg.norm(features)
             features_by_class[target].append(features)
-            features_by_class[target] = np.array(features_by_class[target])
 
 
         # selection procedure
         exemplar_indices_by_class = [[] for i in range(num_classes)]
         for class_index in range(num_classes):
+            features_by_class[class_index] = np.array(features_by_class[class_index])
 
             if selection_method == 'random':
                 for class_index in range(num_classes):
