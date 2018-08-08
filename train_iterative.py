@@ -87,7 +87,7 @@ def main():
     dictionary_size = 300
     num_exemplars_per_class = int(dictionary_size/num_classes)
 
-    selection = 'mean_approx'
+    selection_method = 'mean_approx'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
@@ -376,10 +376,10 @@ def main():
             features = features.data.cpu().numpy()[0]
 
             indices_by_class[target].append(index)
-            print (features.shape)
+            print (features)
             print (np.linalg.norm(features))
             features = features/np.linalg.norm(features)    # FIXME
-            print (features.shape)
+            print (features)
             print ()
             features_by_class[target].append(features)
 
@@ -411,7 +411,7 @@ def main():
                         exemplar_indices_by_class[class_index] = indices_by_class[class_index]
 
 
-            if selection == 'mean_approx':
+            if selection_method == 'mean_approx':
 
                 for class_index in range(num_classes):
                                   
