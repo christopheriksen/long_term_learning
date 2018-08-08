@@ -299,6 +299,10 @@ def main():
             cum_train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
+        train_loader = torch.utils.data.DataLoader(
+            train_dataset, batch_size=batch_size, shuffle=True,
+            num_workers=workers, pin_memory=True)
+
 
 
         ## Train
@@ -308,10 +312,6 @@ def main():
         # early_stopping_buffer.append(best_prec1)
 
         for epoch in range(start_epoch, epochs):
-
-            train_loader = torch.utils.data.DataLoader(
-                train_dataset, batch_size=batch_size, shuffle=True,
-                num_workers=workers, pin_memory=True)
 
             adjust_learning_rate(optimizer, epoch, lr)
 
