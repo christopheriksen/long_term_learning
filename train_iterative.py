@@ -384,6 +384,7 @@ def main():
 
 
         for class_index in range(num_classes):
+            indices_by_class[class_index] = np.array(indices_by_class[class_index])
             features_by_class[class_index] = np.array(features_by_class[class_index])
 
 
@@ -417,24 +418,26 @@ def main():
 
             for class_index in range(num_classes):
 
-                # features_by_class[class_index].T
-                              
-                # Herding procedure : ranking of the potential exemplars
-                print (features_by_class[class_index].shape)
-                mu  = np.mean(features_by_class[class_index],axis=1)      # FIXME
-                print (mu.shape)
-                w_t = mu
-                iter_herding     = 0
-                iter_herding_eff = 0
-                new_prototypes = []
-                while (len(new_prototypes) < min(num_exemplars_per_class, len(indices_by_class[class_index]))):
-                    tmp_t   = np.dot(w_t,features_by_class[class_index])
-                    ind_max = np.argmax(tmp_t)
-                    iter_herding_eff += 1
-                    new_prototypes.append(indices_by_class[class_index][ind_max])
-                    w_t = w_t+mu-D[:,ind_max]
+                if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
 
-                exemplar_indices_by_class[class_index] = new_prototypes
+                    features_by_class[class_index].T
+                                  
+                    # Herding procedure : ranking of the potential exemplars
+                    print (features_by_class[class_index].shape)
+                    mu  = np.mean(features_by_class[class_index],axis=1)      # FIXME
+                    print (mu.shape)
+                    w_t = mu
+                    iter_herding     = 0
+                    iter_herding_eff = 0
+                    new_prototypes = []
+                    while (len(new_prototypes) < min(num_exemplars_per_class, len(indices_by_class[class_index]))):
+                        tmp_t   = np.dot(w_t,features_by_class[class_index])
+                        ind_max = np.argmax(tmp_t)
+                        iter_herding_eff += 1
+                        new_prototypes.append(indices_by_class[class_index][ind_max])
+                        w_t = w_t+mu-D[:,ind_max]
+
+                    exemplar_indices_by_class[class_index] = new_prototypes
 
         
         # save exemplars as dataset
