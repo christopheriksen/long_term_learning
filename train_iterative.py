@@ -383,54 +383,58 @@ def main():
             features_by_class[target].append(features)
 
 
-        # selection procedure
-        exemplar_indices_by_class = [[] for i in range(num_classes)]
         for class_index in range(num_classes):
             features_by_class[class_index] = np.array(features_by_class[class_index])
 
-            if selection_method == 'random':
-                for class_index in range(num_classes):
-                    indices_by_class[class_index] = np.random.shuffle(indices_by_class[class_index])
-                    exemplar_indices_by_class[class_index] = indices_by_class[class_index][:num_exemplars_per_class]
+
+        # selection procedure
+        exemplar_indices_by_class = [[] for i in range(num_classes)]
+
+        if selection_method == 'random':
+            for class_index in range(num_classes):
+                indices_by_class[class_index] = np.random.shuffle(indices_by_class[class_index])
+                exemplar_indices_by_class[class_index] = indices_by_class[class_index][:num_exemplars_per_class]
 
 
-            if selection_method == 'kmedoids':
+        if selection_method == 'kmedoids':
 
-                for class_index in range(num_classes):
+            for class_index in range(num_classes):
 
-                    if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
+                if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
 
-                        # calculate distance matrix
-                        distances = pairwise_distances(features_by_class[class_index], metric=dist_metric)
-                        M, C = kmedoids.kMedoids(distances, num_exemplars_per_class)
+                    # calculate distance matrix
+                    distances = pairwise_distances(features_by_class[class_index], metric=dist_metric)
+                    M, C = kmedoids.kMedoids(distances, num_exemplars_per_class)
 
-                        for index in M:
-                            exemplar_indices_by_class[class_index].append(indices_by_class[class_index][index])
+                    for index in M:
+                        exemplar_indices_by_class[class_index].append(indices_by_class[class_index][index])
 
-                    else:
-                        exemplar_indices_by_class[class_index] = indices_by_class[class_index]
+                else:
+                    exemplar_indices_by_class[class_index] = indices_by_class[class_index]
 
 
-            if selection_method == 'mean_approx':
+        if selection_method == 'mean_approx':
 
-                for class_index in range(num_classes):
-                                  
-                    # Herding procedure : ranking of the potential exemplars
-                    print (features_by_class[class_index].shape)
-                    mu  = np.mean(features_by_class[class_index],axis=1)      # FIXME
-                    print (mu.shape)
-                    w_t = mu
-                    iter_herding     = 0
-                    iter_herding_eff = 0
-                    new_prototypes = []
-                    while (len(new_prototypes) < min(num_exemplars_per_class, len(indices_by_class[class_index]))):
-                        tmp_t   = np.dot(w_t,features_by_class[class_index])
-                        ind_max = np.argmax(tmp_t)
-                        iter_herding_eff += 1
-                        new_prototypes.append(indices_by_class[class_index][ind_max])
-                        w_t = w_t+mu-D[:,ind_max]
+            for class_index in range(num_classes):
 
-                    exemplar_indices_by_class[class_index] = new_prototypes
+                features_by_class[class_index] = features_by_class[class_index].T
+                              
+                # Herding procedure : ranking of the potential exemplars
+                print (features_by_class[class_index].shape)
+                mu  = np.mean(features_by_class[class_index],axis=1)      # FIXME
+                print (mu.shape)
+                w_t = mu
+                iter_herding     = 0
+                iter_herding_eff = 0
+                new_prototypes = []
+                while (len(new_prototypes) < min(num_exemplars_per_class, len(indices_by_class[class_index]))):
+                    tmp_t   = np.dot(w_t,features_by_class[class_index])
+                    ind_max = np.argmax(tmp_t)
+                    iter_herding_eff += 1
+                    new_prototypes.append(indices_by_class[class_index][ind_max])
+                    w_t = w_t+mu-D[:,ind_max]
+
+                exemplar_indices_by_class[class_index] = new_prototypes
 
         
         # save exemplars as dataset
