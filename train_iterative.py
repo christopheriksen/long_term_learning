@@ -93,7 +93,7 @@ def main():
 
     weights_load_name = 'example_load.pth'
     weights_save_name = 'resnet18_rgbd_mean_approx_norm_0.pth'
-    weights_save_name = 'resnet18_rgbd_mean_approx_norm_0_'
+    weights_save_name_base = 'resnet18_rgbd_mean_approx_norm_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
@@ -459,16 +459,17 @@ def main():
         # save model
         print ("Saving model")
         torch.save(model.state_dict(), weights_dir + weights_save_name_base + str() + '.pth')
-        torch.save(model.state_dict(), weights_dir + weights_save_name)
+        # torch.save(model.state_dict(), weights_dir + weights_save_name)
 
+
+    # save model
+    print ("Saving model")
+    torch.save(model.state_dict(), weights_dir + weights_save_name)
 
 
     test_accuracy = validate(test_loader, model, criterion, print_freq)
     cum_train_accuracy = validate(cum_train_loader, model, criterion, print_freq)
 
-    # save model
-    print ("Saving model")
-    torch.save(model.state_dict(), weights_dir + weights_save_name)
 
 
     # save accuracies
