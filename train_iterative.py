@@ -290,10 +290,10 @@ def main():
         if subset_iter == 0:
             cum_train_dataset = train_dataset       # cum dataset for test metrics
         else:
-            cum_train_dataset = torch.utils.data.ConcatDataset([cum_train_dataset, train_dataset])      # cum dataset for test metrics
+            cum_train_dataset = torch.utils.data.dataset.ConcatDataset([cum_train_dataset, train_dataset])      # cum dataset for test metrics
 
             # add stored exemplars to training set
-            train_dataset = torch.utils.data.ConcatDataset([train_dataset, exemplar_dataset])
+            train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
 
         cum_train_loader = torch.utils.data.DataLoader(
             cum_train_dataset, batch_size=batch_size, shuffle=True,
@@ -443,6 +443,8 @@ def main():
         exemplar_indices = []
         for class_index in range(num_classes):
             exemplar_indices.append(exemplar_indices_by_class[class_index])
+
+        print (exemplar_indices)
 
         exemplar_dataset = torch.utils.data.dataset.Subset(train_dataset, exemplar_indices)
 
