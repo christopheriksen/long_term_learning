@@ -423,9 +423,7 @@ def main():
                     features_by_class[class_index] = features_by_class[class_index].T
                                   
                     # Herding procedure : ranking of the potential exemplars
-                    print (features_by_class[class_index].shape)
-                    mu  = np.mean(features_by_class[class_index],axis=1)      # FIXME
-                    print (mu.shape)
+                    mu  = np.mean(features_by_class[class_index],axis=1)
                     w_t = mu
                     iter_herding     = 0
                     iter_herding_eff = 0
@@ -435,7 +433,7 @@ def main():
                         ind_max = np.argmax(tmp_t)
                         iter_herding_eff += 1
                         new_prototypes.append(indices_by_class[class_index][ind_max])
-                        w_t = w_t+mu-D[:,ind_max]
+                        w_t = w_t+mu-features_by_class[class_index][:,ind_max]
 
                     exemplar_indices_by_class[class_index] = new_prototypes
 
