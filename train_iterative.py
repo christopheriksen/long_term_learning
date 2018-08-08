@@ -88,19 +88,19 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = 'mean_approx'
+    selection_method = 'kmedoids'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_rgbd_mean_approx_norm_0.pth'
-    weights_save_name_base = 'resnet18_rgbd_mean_approx_norm_0_'
+    weights_save_name = 'resnet18_rgbd_kmedoids_norm_0.pth'
+    weights_save_name_base = 'resnet18_rgbd_kmedoids_norm_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies_resnet18_rgbd_mean_approx_norm_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies_resnet18_rgbd_kmedoids_norm_0.txt'
     ############################################
 
     ## model
@@ -272,6 +272,8 @@ def main():
 
 
     # Iterate over data subsets
+
+    print ("Num subsets: " + str(num_subsets))
 
     num_subsets = len(train_datasets_by_subset)
     cum_train_dataset = None
