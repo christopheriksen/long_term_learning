@@ -71,7 +71,7 @@ def main():
 
     batch_size = 128
     start_epoch = 0
-    epochs = 1
+    epochs = 70
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
@@ -444,8 +444,6 @@ def main():
         for class_index in range(num_classes):
             for exemplar_index in exemplar_indices_by_class[class_index]:
                 exemplar_indices.append(exemplar_index)
-
-        print (exemplar_indices)
 
         exemplar_dataset = torch.utils.data.dataset.Subset(train_dataset, exemplar_indices)
 

@@ -283,7 +283,7 @@ def load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, nor
                 subset_datasets_by_instance.append(train_datasets_by_instance[subset_index])
                 subset_instance_names.append(train_instance_names[subset_index])
 
-            subset_dataset = torch.utils.data.ConcatDataset(subset_datasets_by_instance)
+            subset_dataset = torch.utils.data.dataset.ConcatDataset(subset_datasets_by_instance)
             train_datasets_by_subset.append(subset_dataset)
             train_instance_names_by_subset.append(subset_instance_names)
 
@@ -295,13 +295,13 @@ def load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, nor
             subset_datasets_by_instance.append(train_datasets_by_instance[subset_index])
             subset_instance_names.append(train_instance_names[subset_index])
 
-        subset_dataset = torch.utils.data.ConcatDataset(subset_datasets_by_instance)
+        subset_dataset = torch.utils.data.dataset.ConcatDataset(subset_datasets_by_instance)
         train_datasets_by_subset.append(subset_dataset)
         train_instance_names_by_subset.append(subset_instance_names)
 
 
         # concat test datasets
-        test_dataset = torch.utils.data.ConcatDataset(test_datasets)
+        test_dataset = torch.utils.data.dataset.ConcatDataset(test_datasets)
 
 
     return train_datasets_by_subset, test_dataset, train_instance_names_by_subset, test_instance_names
@@ -339,7 +339,7 @@ def load_rgbd_batch(data_dir, normalization):
                 instance_datasets.append(dataset)
 
         # concat test datasets
-        dataset = torch.utils.data.ConcatDataset(instance_datasets)
+        dataset = torch.utils.data.dataset.ConcatDataset(instance_datasets)
 
 
         # calculate mean to normalize by
@@ -385,7 +385,7 @@ def load_rgbd_batch(data_dir, normalization):
                 instance_datasets.append(dataset)
 
         # concat test datasets
-        normalized_dataset = torch.utils.data.ConcatDataset(instance_datasets)
+        normalized_dataset = torch.utils.data.dataset.ConcatDataset(instance_datasets)
 
 
     else:
@@ -415,7 +415,7 @@ def load_rgbd_batch(data_dir, normalization):
                 instance_datasets.append(dataset)
 
         # concat test datasets
-        normalized_dataset = torch.utils.data.ConcatDataset(instance_datasets)
+        normalized_dataset = torch.utils.data.dataset.ConcatDataset(instance_datasets)
 
 
     return normalized_dataset
