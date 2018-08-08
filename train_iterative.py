@@ -272,7 +272,7 @@ def main():
     # Iterate over data subsets
 
     num_subsets = len(train_datasets_by_subset)
-    train_dataset_cum = None
+    cum_train_dataset = None
     exemplar_dataset = None
     cum_train_accuracies = []
     test_accuracies = []
@@ -296,7 +296,7 @@ def main():
             train_dataset = torch.utils.data.ConcatDataset([train_dataset, exemplar_dataset])
 
         cum_train_loader = torch.utils.data.DataLoader(
-            train_dataset_cum, batch_size=batch_size, shuffle=True,
+            cum_train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
 
@@ -359,7 +359,7 @@ def main():
 
 
 
-        ## Exemplars
+        ## Exemplars       
         exemplar_pool_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=1, shuffle=False,
             num_workers=workers, pin_memory=True)
@@ -368,6 +368,7 @@ def main():
         indices_by_class = [[] for i in range(num_classes)]
         features_by_class = [[] for i in range(num_classes)]
 
+        model.eval()
         for index, (input_img, target) in enumerate(train_loader):
 
             output, features = model(input_img)
