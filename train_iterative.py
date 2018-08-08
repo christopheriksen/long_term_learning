@@ -273,9 +273,8 @@ def main():
 
     # Iterate over data subsets
 
-    print ("Num subsets: " + str(num_subsets))
-
     num_subsets = len(train_datasets_by_subset)
+    print ("Num subsets: " + str(num_subsets))   
     cum_train_dataset = None
     exemplar_dataset = None
     cum_train_accuracies = []
