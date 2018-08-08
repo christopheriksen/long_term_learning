@@ -370,6 +370,11 @@ def main():
         for index, (input_img, target) in enumerate(train_loader):
 
             output, features = model(input_img)
+
+            target = target.cuda(non_blocking=True)
+            target = target.data.cpu().numpy()[0]
+            features = features.data.cpu().numpy()[0]
+
             indices_by_class[target].append(index)
             print (features.shape)
             print (np.linalg.norm(features).shape)
