@@ -380,7 +380,7 @@ def main():
 
             if normalize_features:
                 features = features/np.linalg.norm(features)
-            features_by_class[target].append(features)
+            features_by_class[target].append(np.array(features))
 
 
         # selection procedure
