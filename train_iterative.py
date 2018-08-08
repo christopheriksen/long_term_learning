@@ -257,6 +257,7 @@ def main():
         for subset_instances in train_instance_names_by_subset:
             for instance in subset_instances:
                 f.write(instance)
+                f.write(' ')
             f.write("\n")
         f.close()
 
@@ -264,6 +265,7 @@ def main():
         f = open(orderings_dir + test_instances_file, "w")
         for instance_name in test_instance_names:
             f.write(instance_name)
+            f.write(' ')
         f.close()
 
         
@@ -313,6 +315,8 @@ def main():
 
         for epoch in range(start_epoch, epochs):
 
+            start_time = time.time()
+
             adjust_learning_rate(optimizer, epoch, lr)
 
             # train for one epoch
@@ -350,6 +354,8 @@ def main():
             #     'best_prec1': best_prec1,
             #     'optimizer' : optimizer.state_dict(),
             # }, is_best, weights_dir + ckpt_save_name, weights_dir + best_ckpt_save_name)
+
+            print ("Epoch time: " + str(time.time() - start_time))
 
 
         # validate(val_loader, model, criterion, print_freq)
