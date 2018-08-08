@@ -417,7 +417,7 @@ def main():
 
             for class_index in range(num_classes):
 
-                features_by_class[class_index] = features_by_class[class_index].T
+                features_by_class[class_index].T
                               
                 # Herding procedure : ranking of the potential exemplars
                 print (features_by_class[class_index].shape)
