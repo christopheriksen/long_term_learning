@@ -443,7 +443,7 @@ def main():
         for class_index in range(num_classes):
             exemplar_indices.append(exemplar_indices_by_class[class_index])
 
-        exemplar_dataset = torch.utils.data.Subset(train_dataset, exemplar_indices)
+        exemplar_dataset = torch.utils.data.dataset.Subset(train_dataset, exemplar_indices)
 
 
 
