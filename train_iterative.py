@@ -420,7 +420,7 @@ def main():
 
                 if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
 
-                    features_by_class[class_index].T
+                    # features_by_class[class_index].T
                                   
                     # Herding procedure : ranking of the potential exemplars
                     print (features_by_class[class_index].shape)
