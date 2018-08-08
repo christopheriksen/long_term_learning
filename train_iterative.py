@@ -25,14 +25,14 @@ import math
 def main():
 
     ############ Modifiable ###################
-    # data_source_dir = '/home/scatha/research_ws/src/lifelong_object_learning/data/training_data'
-    data_source_dir = '/media/ceriksen/Elements/Data/training_data'
+    data_source_dir = '/home/scatha/research_ws/src/lifelong_object_learning/data/training_data'
+    # data_source_dir = '/media/ceriksen/Elements/Data/training_data'
 
-    # weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
-    weights_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/weights/'
+    weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
+    # weights_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/weights/'
 
-    # orderings_dir = '/home/scatha/lifelong_object_learning/long_term_learning/orderings/'
-    orderings_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/orderings/'
+    orderings_dir = '/home/scatha/lifelong_object_learning/long_term_learning/orderings/'
+    # orderings_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/orderings/'
 
 
     # dataset = 'imagenet'
@@ -98,6 +98,8 @@ def main():
 
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
+
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies_resnet18_rgbd_kmedoids_0.txt'
     ############################################
 
     ## model
@@ -241,7 +243,7 @@ def main():
 
         else:
             # normalization_params = None
-            normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+            # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
             normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
             # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
@@ -299,9 +301,9 @@ def main():
 
         ## Train
 
-        best_prec1 = validate(val_loader, model, criterion, print_freq)
-        early_stopping_buffer = []
-        early_stopping_buffer.append(best_prec1)
+        # best_prec1 = validate(val_loader, model, criterion, print_freq)
+        # early_stopping_buffer = []
+        # early_stopping_buffer.append(best_prec1)
 
         for epoch in range(start_epoch, epochs):
 
@@ -461,9 +463,11 @@ def main():
 
     for accuracy in cum_train_accuracies:
         f.write(str(accuracy))
+        f.write ('\n')
     f.write ('\n')
     for accuracy in test_accuracies:
         f.write(str(accuracy))
+        f.write ('\n')
     f.write('\n')
 
 
