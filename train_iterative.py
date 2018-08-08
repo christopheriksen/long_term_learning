@@ -84,7 +84,7 @@ def main():
 
     # num_subsets = 10
     instances_per_subset = 10
-    dictionary_size = 300
+    dictionary_size = 2550
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
@@ -442,7 +442,8 @@ def main():
         # save exemplars as dataset
         exemplar_indices = []
         for class_index in range(num_classes):
-            exemplar_indices.append(exemplar_indices_by_class[class_index])
+            for exemplar_index in exemplar_indices_by_class[class_index]:
+                exemplar_indices.append(exemplar_index)
 
         print (exemplar_indices)
 
