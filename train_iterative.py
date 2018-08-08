@@ -25,7 +25,7 @@ import math
 def main():
 
     ############ Modifiable ###################
-    data_source_dir = '/home/scatha/research_ws/src/lifelong_object_learning/data/training_data'
+    data_source_dir = '/media/scatha/Data/lifelong_object_learning/training_data'
     # data_source_dir = '/media/ceriksen/Elements/Data/training_data'
 
     weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
@@ -236,7 +236,8 @@ def main():
 
     if dataset == 'rgbd-object':
 
-        data_dir = data_source_dir+'/rgbd-dataset_instances/'
+        # data_dir = data_source_dir+'/rgbd-dataset_instances/'
+        data_dir = data_source_dir+'/rgbd-dataset/'
 
         if imagenet_normalization:  # ImageNet pretrain
             normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]   
