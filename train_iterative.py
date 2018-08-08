@@ -87,19 +87,19 @@ def main():
     dictionary_size = 300
     num_exemplars_per_class = int(dictionary_size/num_classes)
 
-    selection = 'kmedoids'
+    selection = 'mean_approx'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_rgbd_kmedoids_0.pth'
-    weights_save_name = 'resnet18_rgbd_kmedoids_0_'
+    weights_save_name = 'resnet18_rgbd_mean_approx_0.pth'
+    weights_save_name = 'resnet18_rgbd_mean_approx_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies_resnet18_rgbd_kmedoids_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies_resnet18_rgbd_mean_approx_0.txt'
     ############################################
 
     ## model
@@ -377,9 +377,10 @@ def main():
 
             indices_by_class[target].append(index)
             print (features.shape)
-            print (np.linalg.norm(features).shape)
+            print (np.linalg.norm(features))
             features = features/np.linalg.norm(features)    # FIXME
             print (features.shape)
+            print ()
             features_by_class[target].append(features)
 
 
