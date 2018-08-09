@@ -88,19 +88,20 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = 'kmedoids'
+    selection_method = 'mean_approx'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_rgbd_kmedoids_norm_0.pth'
-    weights_save_name_base = 'resnet18_rgbd_kmedoids_norm_0_'
+    weights_save_name = 'resnet18_rgbd_mean_approx_norm_0.pth'
+    weights_save_name_base = 'resnet18_rgbd_mean_approx_norm_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
+    load_order = True
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies_resnet18_rgbd_kmedoids_norm_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies_resnet18_rgbd_mean_approx_norm_0.txt'
     ############################################
 
     ## model
@@ -246,27 +247,31 @@ def main():
         else:
             # normalization_params = None
             # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
-            normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
+            normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]        # FIXME: norm includes test data
             # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
 
-        train_datasets_by_subset, test_dataset, train_instance_names_by_subset, test_instance_names = utils.load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, normalization_params)
+        if load_order:
+            train_datasets_by_subset, test_dataset = utils.load_instance_subsets_from_order_file(orderings_dir+subset_instance_order_file, orderings_dir+test_instances_file, data_dir, normalization_params)
 
-        # write instance ordering
-        f = open(orderings_dir + subset_instance_order_file, "w")
-        for subset_instances in train_instance_names_by_subset:
-            for instance in subset_instances:
-                f.write(instance)
+        else:
+            train_datasets_by_subset, test_dataset, train_instance_names_by_subset, test_instance_names = utils.load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, normalization_params)
+
+            # write instance ordering
+            f = open(orderings_dir + subset_instance_order_file, "w")
+            for subset_instances in train_instance_names_by_subset:
+                for instance in subset_instances:
+                    f.write(instance)
+                    f.write(' ')
+                f.write("\n")
+            f.close()
+
+            # write test instance names
+            f = open(orderings_dir + test_instances_file, "w")
+            for instance_name in test_instance_names:
+                f.write(instance_name)
                 f.write(' ')
-            f.write("\n")
-        f.close()
-
-        # write test instance names
-        f = open(orderings_dir + test_instances_file, "w")
-        for instance_name in test_instance_names:
-            f.write(instance_name)
-            f.write(' ')
-        f.close()
+            f.close()
 
         
 
