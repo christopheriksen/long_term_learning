@@ -333,7 +333,8 @@ def load_instance_subsets_from_order_file(train_list, test_list, data_dir, norma
 
             subset_datasets = []
             for instance_name in instance_names:
-                m = re.match("^.*_[0-9]*$", instance_name)
+                m = re.match('^.*_[0-9]*$', instance_name)
+                print (m.groups())
                 class_name = m.groups()[0]
                 print (class_name)
 
