@@ -465,8 +465,8 @@ def main():
         cum_train_accuracy = validate(cum_train_loader, model, criterion, print_freq)
         test_accuracy = validate(test_loader, model, criterion, print_freq)
 
-        cum_train_accuracies.append(cum_train_accuracy)
-        test_accuracies.append(test_accuracy)
+        cum_train_accuracies.append(cum_train_accuracy.data.cpu().numpy()[0])
+        test_accuracies.append(test_accuracy.data.cpu().numpy()[0])
 
 
         # save model
