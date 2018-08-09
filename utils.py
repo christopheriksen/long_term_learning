@@ -340,7 +340,6 @@ def load_instance_subsets_from_order_file(train_list, test_list, data_dir, norma
                 if instance_name[-4] == '_':
                     class_name = instance_name[:-4]
 
-                print (class_name)
 
                 dataset = datasets.ImageFolder(data_dir + class_name + '/' + instance_name, transform= transforms.Compose([
                     # transforms.Resize(299),
