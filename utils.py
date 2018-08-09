@@ -18,6 +18,7 @@ import torchvision.models as models
 import numpy as np
 import random
 import math
+import re
 
 
 def load_CIFAR100(traindir, valdir, normalization=None):
@@ -305,6 +306,70 @@ def load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, nor
 
 
     return train_datasets_by_subset, test_dataset, train_instance_names_by_subset, test_instance_names
+
+
+
+
+
+def load_instance_subsets_from_order_file(train_list, test_list, data_dir, normalization):
+
+    train_instance_names_by_subset = []
+    train_lines = [line.rstrip('\n') for line in open(train_list)]
+    for line in train_lines:
+        train_instance_names_by_subset.append(line.split())
+
+    test_instance_names = []
+    test_lines = [line.rstrip('\n') for line in open(test_list)]
+    test_instance_names = test_lines[0].split()
+
+
+    if normalization != None:
+
+        normalize = transforms.Normalize(mean=normalization[0], std=normalization[1])
+
+        # train datasets
+        train_datasets_by_subset = []
+        for instance_names in train_instance_names_by_subset:
+
+            subset_datasets = []
+            for instance_name in instance_names:
+                class_name = re.match("^.*_[0-9]*$", instance_name)
+                print (class_name)
+
+                dataset = datasets.ImageFolder(data_dir + class_name + '/' + instance_name, transform= transforms.Compose([
+                    # transforms.Resize(299),
+                    transforms.Resize(224),
+                    transforms.CenterCrop(224),
+                    # transforms.RandomResizedCrop(224),
+                    # transforms.RandomHorizontalFlip(),
+                    transforms.ToTensor(),      # converts to [0.0, 1.0]
+                    normalize
+                    ]))
+                subset_datasets.append(dataset)
+            subset_dataset = torch.utils.data.dataset.ConcatDataset(subset_datasets)
+            train_datasets_by_subset.append(subset_dataset)
+
+
+        # test dataset
+        test_datasets = []
+        for instance_name in test_instance_names:
+            class_name = re.match("^.*_[0-9]*$", instance_name)
+            print (class_name)
+
+            dataset = datasets.ImageFolder(data_dir + class_name + '/' + instance_name, transform= transforms.Compose([
+                # transforms.Resize(299),
+                transforms.Resize(224),
+                transforms.CenterCrop(224),
+                # transforms.RandomResizedCrop(224),
+                # transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),      # converts to [0.0, 1.0]
+                normalize
+                ]))
+            test_datasets.append(dataset)
+        test_dataset = torch.utils.data.dataset.ConcatDataset(test_datasets)
+
+
+    return train_datasets_by_subset, test_dataset
 
 
 
