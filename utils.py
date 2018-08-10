@@ -382,6 +382,70 @@ def load_instance_subsets_from_order_file(train_list, test_list, data_dir, norma
 
 
 
+def load_rgbd_batch_from_order_file(train_list, test_list, data_dir, normalization):
+
+    train_instance_names_by_subset = []
+    train_lines = [line.rstrip('\n') for line in open(train_list)]
+    for line in train_lines:
+        train_instance_names_by_subset.append(line.split())
+
+    test_instance_names = []
+    test_lines = [line.rstrip('\n') for line in open(test_list)]
+    test_instance_names = test_lines[0].split()
+
+
+    if normalization != None:
+
+        normalize = transforms.Normalize(mean=normalization[0], std=normalization[1])
+
+        # train datasets
+        train_datasets = []
+        for instance_names in train_instance_names_by_subset:
+            for instance_name in instance_names:
+                if instance_name[-2] == '_':                # only handles up to 3 digits
+                    class_name = instance_name[:-2]
+                if instance_name[-3] == '_':
+                    class_name = instance_name[:-3]
+                if instance_name[-4] == '_':
+                    class_name = instance_name[:-4]
+
+                dataset = datasets.ImageFolder(data_dir + class_name + '/' + instance_name, transform= transforms.Compose([
+                    # transforms.Resize(299),
+                    transforms.Resize(224),
+                    transforms.CenterCrop(224),
+                    # transforms.RandomResizedCrop(224),
+                    # transforms.RandomHorizontalFlip(),
+                    transforms.ToTensor(),      # converts to [0.0, 1.0]
+                    normalize
+                    ]))
+                train_datasets.append(dataset)
+        train_dataset = torch.utils.data.dataset.ConcatDataset(train_datasets)
+
+
+        # test dataset
+        test_datasets = []
+        for instance_name in test_instance_names:
+            if instance_name[-2] == '_':                # only handles up to 3 digits
+                class_name = instance_name[:-2]
+            if instance_name[-3] == '_':
+                class_name = instance_name[:-3]
+            if instance_name[-4] == '_':
+                class_name = instance_name[:-4]
+
+            dataset = datasets.ImageFolder(data_dir + class_name + '/' + instance_name, transform= transforms.Compose([
+                # transforms.Resize(299),
+                transforms.Resize(224),
+                transforms.CenterCrop(224),
+                # transforms.RandomResizedCrop(224),
+                # transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),      # converts to [0.0, 1.0]
+                normalize
+                ]))
+            test_datasets.append(dataset)
+        test_dataset = torch.utils.data.dataset.ConcatDataset(test_datasets)
+
+
+    return train_dataset, test_dataset
 
 
 

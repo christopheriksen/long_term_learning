@@ -46,11 +46,16 @@ def main():
 
     # SGD
     optimizer_method = 'sgd'
-    lr = 2.0
-    lr_dec_factor = 0.2
+    # lr = 2.0
+    # lr_dec_factor = 0.2
+    # lr_dec_freq = 30
+    # momentum = 0.0
+    # weight_decay = 0.00001 
+    lr = 0.01
+    lr_dec_factor = 0.1
     lr_dec_freq = 30
-    momentum = 0.0
-    weight_decay = 0.00001 
+    momentum = 0.9
+    weight_decay = 1e-4
 
     # # Adadelta
     # optimizer_method = 'adadelta'
@@ -64,45 +69,60 @@ def main():
     # RMSprop
     # optimizer_method = 'rmsprop'
 
-    batch_size = 128
+    # batch_size = 128
+    batch_size = 256
     start_epoch = 0
-    epochs = 70
+    epochs = 90
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
 
     load_weights = False
     load_ckpt = False
-    imagenet_finetune = False
-    imagenet_normalization = False
+    imagenet_finetune = True
+    imagenet_normalization = True
     freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_rgbd_all.pth'
-    ckpt_save_name = 'resnet18_rgbd_all.pth'
-    best_ckpt_save_name = 'resnet18_rgbd_all_best_ckpt.pth'
+    weights_save_name = 'resnet18_rgbd_all_imagenet_lr_0.01_v1.pth'
+    ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr_0.01_v1.pth'
+    best_ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr_0.01_v1.pth'
     ############################################
 
     ## model
 
+    if imagenet_finetune:
+
+        # torchvision resnet
+        if arch == 'resnet18':
+            model = models.resnet18(pretrained=True, new_num_classes=num_classes)
+
     # torchvision resnet
     if arch == 'resnet18':
-        model = models.resnet18()
+        model = models.resnet18(num_classes=num_classes)
     if arch == 'resnet34':
-        model = models.resnet34()
+        model = models.resnet34(num_classes=num_classes)
     if arch == 'resnet50':
-        model = models.resnet50()
+        model = models.resnet50(num_classes=num_classes)
     if arch == 'resnet101':
-        model = models.resnet101()
+        model = models.resnet101(num_classes=num_classes)
     if arch == 'resnet152':
-        model = models.resnet152()
+        model = models.resnet152(num_classes=num_classes)
 
 
     # load saved weights
     if load_weights:
         state_dict = torch.load(weights_dir + weights_load_name)
-        model.load_state_dict(state_dict)
 
+        from collections import OrderedDict
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            name = k[7:] # remove `module.`
+            new_state_dict[name] = v
+        # load params
+        state_dict = new_state_dict
+
+        model.load_state_dict(state_dict)
 
     # resume from checkpoint
     if load_ckpt:
@@ -198,15 +218,20 @@ def main():
         data_dir = data_source_dir+'/rgbd-dataset/'
 
         if imagenet_normalization:
-            train_dataset  = utils.load_rgbd_batch(data_dir, [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]])      # ImageNet pretrain
+            normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]      # ImageNet pretrain
 
         else:
-            # train_dataset = utils.load_rgbd_batch(data_dir, None)
-            # train_dataset = utils.load_rgbd_batch(data_dir, [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
-            train_dataset = utils.load_rgbd_batch(data_dir, [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]])
-            # train_dataset = utils.load_rgbd_batch(data_dir, [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]])
+            # normalization_params = None
+            # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+            normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
+            # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
-        val_dataset = train_dataset
+        if load_order:
+            train_dataset, val_dataset = utils.load_rgbd_batch_from_order_file(orderings_dir+subset_instance_order_file, orderings_dir+test_instances_file, data_dir, normalization_params)
+        
+        else:
+            train_dataset = utils.load_rgbd_batch(data_dir, normalization_params)
+            val_dataset = train_dataset
 
 
 
