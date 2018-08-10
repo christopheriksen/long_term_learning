@@ -113,17 +113,22 @@ def main():
 
     ## model
 
+    if imagenet_finetune:
+        # torchvision resnet
+        if arch == 'resnet18':
+            model = models.resnet18(pretrained=True, new_num_classes=num_classes)
+
     # torchvision resnet
     if arch == 'resnet18':
-        model = models.resnet18()
+        model = models.resnet18(num_classes=num_classes)
     if arch == 'resnet34':
-        model = models.resnet34()
+        model = models.resnet34(num_classes=num_classes)
     if arch == 'resnet50':
-        model = models.resnet50()
+        model = models.resnet50(num_classes=num_classes)
     if arch == 'resnet101':
-        model = models.resnet101()
+        model = models.resnet101(num_classes=num_classes)
     if arch == 'resnet152':
-        model = models.resnet152()
+        model = models.resnet152(num_classes=num_classes)
 
 
     # load saved weights

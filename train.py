@@ -29,6 +29,9 @@ def main():
     weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
     # weights_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/weights/'
 
+    orderings_dir = '/home/scatha/lifelong_object_learning/long_term_learning/orderings/'
+    # orderings_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/orderings/'
+
 
     # dataset = "imagenet"
     # dataset = "cifar10"
@@ -87,12 +90,15 @@ def main():
     weights_save_name = 'resnet18_rgbd_all_imagenet_lr_0.01_v1.pth'
     ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr_0.01_v1.pth'
     best_ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr_0.01_v1.pth'
+
+    load_order = True
+    subset_instance_order_file = 'instance_order_0.txt'
+    test_instances_file = 'test_instances_0.txt'
     ############################################
 
     ## model
 
     if imagenet_finetune:
-
         # torchvision resnet
         if arch == 'resnet18':
             model = models.resnet18(pretrained=True, new_num_classes=num_classes)
