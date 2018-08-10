@@ -87,9 +87,9 @@ def main():
     freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_rgbd_all_imagenet_lr_0.01_v1.pth'
-    ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr_0.01_v1.pth'
-    best_ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr_0.01_v1.pth'
+    weights_save_name = 'resnet18_rgbd_all_imagenet_lr0.01_e90_v1.pth'
+    ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr0.01_e90_v1_ckpt.pth'
+    best_ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr0.01_e90_v1_best_ckpt.pth'
 
     load_order = True
     subset_instance_order_file = 'instance_order_0.txt'
