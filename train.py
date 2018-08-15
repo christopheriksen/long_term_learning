@@ -95,6 +95,8 @@ def main():
     load_order = False
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
+
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_cifar100_imagenet_lr0.01_e90_v1.txt'
     ############################################
 
     ## model
@@ -258,6 +260,9 @@ def main():
     # early_stopping_buffer = []
     # early_stopping_buffer.append(best_prec1)
 
+    train_accuracies = []
+    val_accuracies = []
+
     for epoch in range(start_epoch, epochs):
 
         start_time = time.time()
@@ -269,6 +274,11 @@ def main():
 
         # evaluate on validation set
         # prec1 = validate(val_loader, model, criterion, print_freq)
+        train_accuracy = validate(train_loader, model, criterion, print_freq)
+        val_accuracy = validate(val_loader, model, criterion, print_freq)
+
+        train_accuracies.append(train_accuracy)
+        val_accuracies.append(val_accuracy)
 
 
         # # early stopping
@@ -310,7 +320,19 @@ def main():
     # best_checkpoint = torch.load(weights_dir + best_ckpt_save_name)
     # model.load_state_dict(best_checkpoint['state_dict'])
 
-    validate(val_loader, model, criterion, print_freq)
+    # validate(val_loader, model, criterion, print_freq)
+
+    # save accuracies
+    f = open(accuracies_file, "w")
+
+    for accuracy in train_accuracies:
+        f.write(str(accuracy))
+        f.write ('\n')
+    f.write ('\n')
+    for accuracy in val_accuracies:
+        f.write(str(accuracy))
+        f.write ('\n')
+    f.write('\n')
 
 
 
