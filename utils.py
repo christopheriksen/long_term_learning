@@ -36,9 +36,9 @@ def load_CIFAR100(traindir, valdir, normalization=None):
             transforms.ToTensor(),      # converts to [0.0, 1.0]
             normalize
             ]),
-            download=False)
+            download=True)
 
-        val_dataset = datasets.CIFAR100(valdir, train=True, transform= transforms.Compose([
+        val_dataset = datasets.CIFAR100(valdir, train=False, transform= transforms.Compose([
             # transforms.Resize(299),
             transforms.Resize(224),
             transforms.CenterCrop(224),
@@ -47,7 +47,7 @@ def load_CIFAR100(traindir, valdir, normalization=None):
             transforms.ToTensor(),
             normalize
             ]),
-            download=False)
+            download=True)
 
 
     # otherwise calculate mean, std to normalize by
@@ -94,9 +94,9 @@ def load_CIFAR100(traindir, valdir, normalization=None):
             transforms.ToTensor(),      # converts to [0.0, 1.0]
             normalize
             ]),
-            download=False)
+            download=True)
 
-        val_dataset = datasets.CIFAR100(valdir, train=True, transform= transforms.Compose([
+        val_dataset = datasets.CIFAR100(valdir, train=False, transform= transforms.Compose([
             # transforms.Resize(299),
             transforms.Resize(224),
             transforms.CenterCrop(224),
@@ -105,7 +105,7 @@ def load_CIFAR100(traindir, valdir, normalization=None):
             transforms.ToTensor(),
             normalize
             ]),
-            download=False)
+            download=True)
 
     return train_dataset, val_dataset
 
