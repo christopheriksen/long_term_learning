@@ -36,11 +36,11 @@ def main():
 
     # dataset = "imagenet"
     # dataset = "cifar10"
-    # dataset = "cifar100"
-    dataset = "rgbd-object"
+    dataset = "cifar100"
+    # dataset = "rgbd-object"
 
-    num_classes = 51
-    # num_classes = 100
+    # num_classes = 51
+    num_classes = 100
 
 
     # arch = 'resnet18'
@@ -77,7 +77,7 @@ def main():
     # RMSprop
     # optimizer_method = 'rmsprop'
 
-    batch_size = 16
+    batch_size = 32
     # batch_size = 256
     start_epoch = 0
     epochs = 30
@@ -92,15 +92,15 @@ def main():
     freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e90_v1.pth'
-    ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e90_v1_ckpt.pth'
-    best_ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e90_v1_best_ckpt.pth'
+    weights_save_name = 'inceptionresnetv2_cifar100_imagenet_sgd_lr0.01_e90_v1.pth'
+    ckpt_save_name = 'inceptionresnetv2_cifar100_imagenet_sgd_lr0.01_e90_v1_ckpt.pth'
+    best_ckpt_save_name = 'inceptionresnetv2_cifar100_imagenet_sgd_lr0.01_e90_v1_best_ckpt.pth'
 
     load_order = True
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e90_v1.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/inceptionresnetv2_cifar100_imagenet_sgd_lr0.01_e90_v1.txt'
     ############################################
 
     ## model
@@ -307,7 +307,7 @@ def main():
     # early_stopping_buffer = []
     # early_stopping_buffer.append(best_prec1)
 
-    train_accuracies = []
+    # train_accuracies = []
     val_accuracies = []
 
     for epoch in range(start_epoch, epochs):
@@ -321,10 +321,11 @@ def main():
 
         # evaluate on validation set
         # prec1 = validate(val_loader, model, criterion, print_freq)
-        train_accuracy = validate(train_loader, model, criterion, print_freq).data.cpu().numpy()
+
+        # train_accuracy = validate(train_loader, model, criterion, print_freq).data.cpu().numpy()
         val_accuracy = validate(val_loader, model, criterion, print_freq).data.cpu().numpy()
 
-        train_accuracies.append(train_accuracy)
+        # train_accuracies.append(train_accuracy)
         val_accuracies.append(val_accuracy)
 
 
@@ -372,10 +373,10 @@ def main():
     # save accuracies
     f = open(accuracies_file, "w")
 
-    for accuracy in train_accuracies:
-        f.write(str(accuracy))
-        f.write ('\n')
-    f.write ('\n')
+    # for accuracy in train_accuracies:
+    #     f.write(str(accuracy))
+    #     f.write ('\n')
+    # f.write ('\n')
     for accuracy in val_accuracies:
         f.write(str(accuracy))
         f.write ('\n')
