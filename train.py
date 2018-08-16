@@ -80,7 +80,7 @@ def main():
     batch_size = 16
     # batch_size = 256
     start_epoch = 0
-    epochs = 30
+    epochs = 10
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
