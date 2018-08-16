@@ -92,7 +92,7 @@ def main():
     ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr0.01_e90_v2_ckpt.pth'
     best_ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr0.01_e90_v2_best_ckpt.pth'
 
-    load_order = False
+    load_order = True
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
