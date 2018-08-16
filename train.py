@@ -76,7 +76,7 @@ def main():
     # batch_size = 128
     batch_size = 256
     start_epoch = 0
-    epochs = 90
+    epochs = 30
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
@@ -101,22 +101,27 @@ def main():
 
     ## model
 
-    if imagenet_finetune:
-        # torchvision resnet
-        if arch == 'resnet18':
-            model = models.resnet18(pretrained=True, new_num_classes=num_classes)
-
     # torchvision resnet
     if arch == 'resnet18':
-        model = models.resnet18(num_classes=num_classes)
-    if arch == 'resnet34':
-        model = models.resnet34(num_classes=num_classes)
-    if arch == 'resnet50':
-        model = models.resnet50(num_classes=num_classes)
-    if arch == 'resnet101':
-        model = models.resnet101(num_classes=num_classes)
-    if arch == 'resnet152':
-        model = models.resnet152(num_classes=num_classes)
+        if imagenet_finetune:
+            model = models.resnet18(pretrained=True, new_num_classes=num_classes)
+        else:
+            model = models.resnet18(num_classes=num_classes)
+    # if arch == 'resnet34':
+    #     model = models.resnet34(num_classes=num_classes)
+    # if arch == 'resnet50':
+    #     model = models.resnet50(num_classes=num_classes)
+    # if arch == 'resnet101':
+    #     model = models.resnet101(num_classes=num_classes)
+    # if arch == 'resnet152':
+    #     model = models.resnet152(num_classes=num_classes)
+
+    if arch == 'resnet-inception':
+        if imagenet_finetune:
+            model = pretrained_models.InceptionResNetV2()
+            model.last_linear = nn.Linear(1536, num_classes)
+        else:
+            model = pretrained_models.InceptionResNetV2(num_classes=num_classes)
 
 
     # load saved weights
@@ -274,8 +279,8 @@ def main():
 
         # evaluate on validation set
         # prec1 = validate(val_loader, model, criterion, print_freq)
-        train_accuracy = validate(train_loader, model, criterion, print_freq)
-        val_accuracy = validate(val_loader, model, criterion, print_freq)
+        train_accuracy = validate(train_loader, model, criterion, print_freq).data.cpu().numpy()
+        val_accuracy = validate(val_loader, model, criterion, print_freq).data.cpu().numpy()
 
         train_accuracies.append(train_accuracy)
         val_accuracies.append(val_accuracy)
