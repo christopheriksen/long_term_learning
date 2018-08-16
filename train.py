@@ -17,20 +17,21 @@ import torchvision.models
 
 import numpy as np
 import utils
-import models
+import pretrainedmodels
+
 
 
 def main():
 
     ############ Modifiable ###################
-    data_source_dir = '/media/scatha/Data/lifelong_object_learning/training_data'
-    # data_source_dir = '/media/ceriksen/Elements/Data/training_data'
+    # data_source_dir = '/media/scatha/Data/lifelong_object_learning/training_data'
+    data_source_dir = '/media/ceriksen/Elements/Data/training_data'
 
-    weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
-    # weights_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/weights/'
+    # weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
+    weights_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/weights/'
 
-    orderings_dir = '/home/scatha/lifelong_object_learning/long_term_learning/orderings/'
-    # orderings_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/orderings/'
+    # orderings_dir = '/home/scatha/lifelong_object_learning/long_term_learning/orderings/'
+    orderings_dir = '/home/ceriksen/lifelong_object_learning/long_term_learning/orderings/'
 
 
     # dataset = "imagenet"
@@ -42,11 +43,14 @@ def main():
     # num_classes = 100
 
 
-    arch = 'resnet18'
+    # arch = 'resnet18'
     # arch = 'resnet34'
     # arch = 'resnet50'
     # arch = 'resnet101'
     # arch = 'resnet152'
+
+    pretrained_model = True
+    arch = 'inceptionresnetv2'
 
     # SGD
     optimizer_method = 'sgd'
@@ -88,15 +92,15 @@ def main():
     freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_rgbd_all_imagenet_lr0.01_e90_v2.pth'
-    ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr0.01_e90_v2_ckpt.pth'
-    best_ckpt_save_name = 'resnet18_rgbd_all_imagenet_lr0.01_e90_v2_best_ckpt.pth'
+    weights_save_name = 'inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e90_v1.pth'
+    ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e90_v1_ckpt.pth'
+    best_ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e90_v1_best_ckpt.pth'
 
     load_order = True
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_rgbd_all_imagenet_lr0.01_e90_v2.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e90_v1.txt'
     ############################################
 
     ## model
@@ -116,12 +120,19 @@ def main():
     # if arch == 'resnet152':
     #     model = models.resnet152(num_classes=num_classes)
 
-    if arch == 'resnet-inception':
-        if imagenet_finetune:
-            model = pretrained_models.InceptionResNetV2()
-            model.last_linear = nn.Linear(1536, num_classes)
-        else:
-            model = pretrained_models.InceptionResNetV2(num_classes=num_classes)
+    if pretrained_model:
+        if arch == 'inceptionresnetv2':
+            img_size = 299
+            if imagenet_finetune:
+                model = pretrainedmodels.__dict__['inceptionresnetv2']()
+                if freeze_weights:
+                    for param in model.parameters():
+                        param.requires_grad = False
+                model.last_linear = nn.Linear(1536, num_classes)
+                # for param in model.last_linear.parameters():
+                #     param.requires_grad = True
+            else:
+                model = pretrainedmodels.__dict__['inceptionresnetv2'](num_classes=num_classes, pretrained=False)
 
 
     # load saved weights
@@ -182,6 +193,15 @@ def main():
     #                             momentum=momentum,
     #                             centered=centered)
 
+    if optimizer_method == 'rmsprop':
+        optimizer = torch.optim.RMSprop(filter(lambda p: p.requires_grad, model.parameters()),
+                                    lr = 0.001,
+                                    alpha=0.9,
+                                    eps = 1e-08,
+                                    weight_decay=0,
+                                    momentum=0,
+                                    centered=False)
+
 
 
     ## Data loading code
@@ -190,13 +210,24 @@ def main():
         traindir = data_source_dir+"/cifar100"
         valdir = data_source_dir+"/cifar100"
 
-        if imagenet_normalization:
-            train_dataset, val_dataset = utils.load_CIFAR100(traindir, valdir, [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]])      # ImageNet pretrain
+        if pretrained_model:
+            if imagenet_normalization:
+                normalization_params = [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]      # ImageNet pretrain pretrainedmodels
+            else:
+                # normalization_params = None
+                normalization_params = [[0.50704312, 0.48651126, 0.44088557], [1.0, 1.0, 1.0]]
+                # normalization_params = [[0.50704312, 0.48651126, 0.44088557], [0.26177242, 0.25081211, 0.27087295]]
 
         else:
-            # train_dataset, val_dataset = utils.load_CIFAR100(traindir, valdir, None)
-            train_dataset, val_dataset = utils.load_CIFAR100(traindir, valdir, [[0.50704312, 0.48651126, 0.44088557], [1.0, 1.0, 1.0]])
-            # train_dataset, val_dataset = utils.load_CIFAR100(traindir, valdir, [[0.50704312, 0.48651126, 0.44088557], [0.26177242, 0.25081211, 0.27087295]])
+            img_size = 224
+            if imagenet_normalization:
+                normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]      # ImageNet pretrain torchvision
+            else:
+                # normalization_params = None
+                normalization_params = [[0.50704312, 0.48651126, 0.44088557], [1.0, 1.0, 1.0]]
+                # normalization_params = [[0.50704312, 0.48651126, 0.44088557], [0.26177242, 0.25081211, 0.27087295]]
+
+        train_dataset, val_dataset = utils.load_CIFAR100(traindir, valdir, img_size, normalization_params)
 
 
 
@@ -231,20 +262,31 @@ def main():
 
         data_dir = data_source_dir+'/rgbd-dataset/'
 
-        if imagenet_normalization:
-            normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]      # ImageNet pretrain
+        if pretrained_model:
+            img_size = 299
+            if imagenet_normalization:
+                normalization_params = [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]      # ImageNet pretrain pretrainedmodels
+            else:
+                # normalization_params = None
+                # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+                normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
+                # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
         else:
-            # normalization_params = None
-            # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
-            normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
-            # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
+            img_size = 224
+            if imagenet_normalization:
+                normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]      # ImageNet pretrain torchvision
+            else:
+                # normalization_params = None
+                # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+                normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
+                # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
         if load_order:
-            train_dataset, val_dataset = utils.load_rgbd_batch_from_order_file(orderings_dir+subset_instance_order_file, orderings_dir+test_instances_file, data_dir, normalization_params)
+            train_dataset, val_dataset = utils.load_rgbd_batch_from_order_file(orderings_dir+subset_instance_order_file, orderings_dir+test_instances_file, data_dir, img_size, normalization_params)
         
         else:
-            train_dataset = utils.load_rgbd_batch(data_dir, normalization_params)
+            train_dataset = utils.load_rgbd_batch(data_dir, img_size, normalization_params)
             val_dataset = train_dataset
 
 

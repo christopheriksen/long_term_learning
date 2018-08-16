@@ -21,7 +21,7 @@ import math
 import re
 
 
-def load_CIFAR100(traindir, valdir, normalization=None):
+def load_CIFAR100(traindir, valdir, img_size, normalization=None):
 
     if normalization != None:
 
@@ -29,8 +29,8 @@ def load_CIFAR100(traindir, valdir, normalization=None):
 
         train_dataset = datasets.CIFAR100(traindir, train=True, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -40,8 +40,8 @@ def load_CIFAR100(traindir, valdir, normalization=None):
 
         val_dataset = datasets.CIFAR100(valdir, train=False, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
@@ -55,8 +55,8 @@ def load_CIFAR100(traindir, valdir, normalization=None):
 
         train_dataset = datasets.CIFAR100(traindir, train=True, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor()      # converts to [0.0, 1.0]
@@ -65,7 +65,7 @@ def load_CIFAR100(traindir, valdir, normalization=None):
             download=False)
 
         # subtract out mean
-        dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=False, num_workers=4)
+        dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=False, num_workers=4)
         data_mean = []
         data_std = []
         # for i, data in enumerate(dataloader, 0):
@@ -87,8 +87,8 @@ def load_CIFAR100(traindir, valdir, normalization=None):
 
         train_dataset = datasets.CIFAR100(traindir, train=True, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -98,8 +98,8 @@ def load_CIFAR100(traindir, valdir, normalization=None):
 
         val_dataset = datasets.CIFAR100(valdir, train=False, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
@@ -111,7 +111,7 @@ def load_CIFAR100(traindir, valdir, normalization=None):
 
 
 
-def load_image_folder(traindir, valdir, normalization=None):
+def load_image_folder(traindir, valdir, img_size, normalization=None):
 
     if normalization != None:
 
@@ -119,8 +119,8 @@ def load_image_folder(traindir, valdir, normalization=None):
 
         train_dataset = datasets.ImageFolder(traindir, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -129,8 +129,8 @@ def load_image_folder(traindir, valdir, normalization=None):
 
         val_dataset = datasets.ImageFolder(valdir, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
@@ -143,8 +143,8 @@ def load_image_folder(traindir, valdir, normalization=None):
 
         train_dataset = datasets.ImageFolder(traindir, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor()      # converts to [0.0, 1.0]
@@ -152,7 +152,7 @@ def load_image_folder(traindir, valdir, normalization=None):
             ]))
 
         # subtract out mean
-        dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=False, num_workers=4)
+        dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=False, num_workers=4)
         data_mean = []
         data_std = []
         # for i, data in enumerate(dataloader, 0):
@@ -174,8 +174,8 @@ def load_image_folder(traindir, valdir, normalization=None):
 
         train_dataset = datasets.ImageFolder(traindir, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -184,8 +184,8 @@ def load_image_folder(traindir, valdir, normalization=None):
 
         val_dataset = datasets.ImageFolder(valdir, transform= transforms.Compose([
             # transforms.Resize(299),
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(img_size),
+            transforms.CenterCrop(img_size),
             # transforms.RandomResizedCrop(224),
             # transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
@@ -198,7 +198,7 @@ def load_image_folder(traindir, valdir, normalization=None):
 
 
 
-def load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, normalization):
+def load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, img_size, normalization):
 
     if normalization != None:
 
@@ -215,7 +215,7 @@ def load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, nor
         #     ]))
 
 
-        # dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=False, num_workers=4)
+        # dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=False, num_workers=4)
 
 
         # for i, (input, target) in enumerate(dataloader):
@@ -251,8 +251,8 @@ def load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, nor
 
                 dataset = datasets.ImageFolder(data_dir + curr_class + '/' + instance, transform= transforms.Compose([
                     # transforms.Resize(299),
-                    transforms.Resize(224),
-                    transforms.CenterCrop(224),
+                    transforms.Resize(img_size),
+                    transforms.CenterCrop(img_size),
                     # transforms.RandomResizedCrop(224),
                     # transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -311,7 +311,7 @@ def load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, nor
 
 
 
-def load_instance_subsets_from_order_file(train_list, test_list, data_dir, normalization):
+def load_instance_subsets_from_order_file(train_list, test_list, data_dir, img_size, normalization):
 
     train_instance_names_by_subset = []
     train_lines = [line.rstrip('\n') for line in open(train_list)]
@@ -343,8 +343,8 @@ def load_instance_subsets_from_order_file(train_list, test_list, data_dir, norma
 
                 dataset = datasets.ImageFolder(data_dir + class_name + '/' + instance_name, transform= transforms.Compose([
                     # transforms.Resize(299),
-                    transforms.Resize(224),
-                    transforms.CenterCrop(224),
+                    transforms.Resize(img_size),
+                    transforms.CenterCrop(img_size),
                     # transforms.RandomResizedCrop(224),
                     # transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -367,8 +367,8 @@ def load_instance_subsets_from_order_file(train_list, test_list, data_dir, norma
 
             dataset = datasets.ImageFolder(data_dir + class_name + '/' + instance_name, transform= transforms.Compose([
                 # transforms.Resize(299),
-                transforms.Resize(224),
-                transforms.CenterCrop(224),
+                transforms.Resize(img_size),
+                transforms.CenterCrop(img_size),
                 # transforms.RandomResizedCrop(224),
                 # transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -382,7 +382,7 @@ def load_instance_subsets_from_order_file(train_list, test_list, data_dir, norma
 
 
 
-def load_rgbd_batch_from_order_file(train_list, test_list, data_dir, normalization):
+def load_rgbd_batch_from_order_file(train_list, test_list, data_dir, img_size, normalization):
 
     train_instance_names_by_subset = []
     train_lines = [line.rstrip('\n') for line in open(train_list)]
@@ -411,8 +411,8 @@ def load_rgbd_batch_from_order_file(train_list, test_list, data_dir, normalizati
 
                 dataset = datasets.ImageFolder(data_dir + class_name + '/' + instance_name, transform= transforms.Compose([
                     # transforms.Resize(299),
-                    transforms.Resize(224),
-                    transforms.CenterCrop(224),
+                    transforms.Resize(img_size),
+                    transforms.CenterCrop(img_size),
                     # transforms.RandomResizedCrop(224),
                     # transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -434,8 +434,8 @@ def load_rgbd_batch_from_order_file(train_list, test_list, data_dir, normalizati
 
             dataset = datasets.ImageFolder(data_dir + class_name + '/' + instance_name, transform= transforms.Compose([
                 # transforms.Resize(299),
-                transforms.Resize(224),
-                transforms.CenterCrop(224),
+                transforms.Resize(img_size),
+                transforms.CenterCrop(img_size),
                 # transforms.RandomResizedCrop(224),
                 # transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -449,7 +449,7 @@ def load_rgbd_batch_from_order_file(train_list, test_list, data_dir, normalizati
 
 
 
-def load_rgbd_batch(data_dir, normalization):
+def load_rgbd_batch(data_dir, img_size, normalization):
 
     if normalization == None:
 
@@ -467,8 +467,8 @@ def load_rgbd_batch(data_dir, normalization):
                 instance = instances[instance_index]
                 dataset = datasets.ImageFolder(data_dir + curr_class + '/' + instance, transform= transforms.Compose([
                     # transforms.Resize(299),
-                    transforms.Resize(224),
-                    transforms.CenterCrop(224),
+                    transforms.Resize(img_size),
+                    transforms.CenterCrop(img_size),
                     # transforms.RandomResizedCrop(224),
                     # transforms.RandomHorizontalFlip(),
                     transforms.ToTensor()      # converts to [0.0, 1.0]
@@ -483,7 +483,7 @@ def load_rgbd_batch(data_dir, normalization):
         # calculate mean to normalize by
         data_mean = []
         data_std = []
-        dataloader = torch.utils.data.DataLoader(dataset, batch_size=128, shuffle=False, num_workers=4)
+        dataloader = torch.utils.data.DataLoader(dataset, batch_size=256, shuffle=False, num_workers=4)
         for i, (input, target) in enumerate(dataloader):
             # numpy_image = data['image'].numpy()
             numpy_image = input.numpy()
@@ -513,8 +513,8 @@ def load_rgbd_batch(data_dir, normalization):
                 instance = instances[instance_index]
                 dataset = datasets.ImageFolder(data_dir + curr_class + '/' + instance, transform= transforms.Compose([
                     # transforms.Resize(299),
-                    transforms.Resize(224),
-                    transforms.CenterCrop(224),
+                    transforms.Resize(img_size),
+                    transforms.CenterCrop(img_size),
                     # transforms.RandomResizedCrop(224),
                     # transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),      # converts to [0.0, 1.0]
@@ -543,8 +543,8 @@ def load_rgbd_batch(data_dir, normalization):
                 instance = instances[instance_index]
                 dataset = datasets.ImageFolder(data_dir + curr_class + '/' + instance, transform= transforms.Compose([
                     # transforms.Resize(299),
-                    transforms.Resize(224),
-                    transforms.CenterCrop(224),
+                    transforms.Resize(img_size),
+                    transforms.CenterCrop(img_size),
                     # transforms.RandomResizedCrop(224),
                     # transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),      # converts to [0.0, 1.0]
