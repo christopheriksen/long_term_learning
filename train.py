@@ -77,7 +77,7 @@ def main():
     # RMSprop
     # optimizer_method = 'rmsprop'
 
-    batch_size = 32
+    batch_size = 16
     # batch_size = 256
     start_epoch = 0
     epochs = 30
