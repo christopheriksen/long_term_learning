@@ -65,7 +65,7 @@ def load_CIFAR100(traindir, valdir, img_size, normalization=None):
             download=False)
 
         # subtract out mean
-        dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=False, num_workers=4)
+        dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=16, shuffle=False, num_workers=4)
         data_mean = []
         data_std = []
         # for i, data in enumerate(dataloader, 0):
@@ -152,7 +152,7 @@ def load_image_folder(traindir, valdir, img_size, normalization=None):
             ]))
 
         # subtract out mean
-        dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=False, num_workers=4)
+        dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=16, shuffle=False, num_workers=4)
         data_mean = []
         data_std = []
         # for i, data in enumerate(dataloader, 0):
@@ -215,7 +215,7 @@ def load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, img
         #     ]))
 
 
-        # dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=False, num_workers=4)
+        # dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=16, shuffle=False, num_workers=4)
 
 
         # for i, (input, target) in enumerate(dataloader):
@@ -483,7 +483,7 @@ def load_rgbd_batch(data_dir, img_size, normalization):
         # calculate mean to normalize by
         data_mean = []
         data_std = []
-        dataloader = torch.utils.data.DataLoader(dataset, batch_size=64, shuffle=False, num_workers=4)
+        dataloader = torch.utils.data.DataLoader(dataset, batch_size=16, shuffle=False, num_workers=4)
         for i, (input, target) in enumerate(dataloader):
             # numpy_image = data['image'].numpy()
             numpy_image = input.numpy()
