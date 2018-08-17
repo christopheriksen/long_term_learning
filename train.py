@@ -53,17 +53,18 @@ def main():
     arch = 'inceptionresnetv2'
 
     # SGD
-    optimizer_method = 'sgd'
+    # optimizer_method = 'sgd'
     # lr = 2.0
     # lr_dec_factor = 0.2
     # lr_dec_freq = 30
     # momentum = 0.0
-    # weight_decay = 0.00001 
-    lr = 0.01
-    lr_dec_factor = 0.1
-    lr_dec_freq = 30
-    momentum = 0.9
-    weight_decay = 1e-4
+    # weight_decay = 0.00001
+
+    # lr = 0.01
+    # lr_dec_factor = 0.1
+    # lr_dec_freq = 30
+    # momentum = 0.9
+    # weight_decay = 1e-4
 
     # # Adadelta
     # optimizer_method = 'adadelta'
@@ -75,12 +76,12 @@ def main():
     # centered=False
 
     # RMSprop
-    # optimizer_method = 'rmsprop'
+    optimizer_method = 'rmsprop'
 
     batch_size = 16
     # batch_size = 256
     start_epoch = 0
-    epochs = 10
+    epochs = 5
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
@@ -92,15 +93,15 @@ def main():
     freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e10_v1.pth'
-    ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e10_v1_ckpt.pth'
-    best_ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e10_v1_best_ckpt.pth'
+    weights_save_name = 'inceptionresnetv2_rgbd_all_imagenet_rmsprop_lr0.001_e10_v1.pth'
+    ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_rmsprop_lr0.001_e10_v1_ckpt.pth'
+    best_ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_rmsprop_lr0.001_e10_v1_best_ckpt.pth'
 
     load_order = True
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/inceptionresnetv2_rgbd_all_imagenet_sgd_lr0.01_e10_v1.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/inceptionresnetv2_rgbd_all_imagenet_rmsprop_lr0.001_e10_v1.txt'
     ############################################
 
     ## model
