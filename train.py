@@ -315,7 +315,7 @@ def main():
 
         start_time = time.time()
 
-        adjust_learning_rate(optimizer, epoch, lr)
+        # adjust_learning_rate(optimizer, epoch, lr)
 
         # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch, print_freq)
