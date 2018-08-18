@@ -36,11 +36,11 @@ def main():
 
     # dataset = "imagenet"
     # dataset = "cifar10"
-    # dataset = "cifar100"
-    dataset = "rgbd-object"
+    dataset = "cifar100"
+    # dataset = "rgbd-object"
 
-    num_classes = 51
-    # num_classes = 100
+    # num_classes = 51
+    num_classes = 100
 
 
     # arch = 'resnet18'
@@ -93,15 +93,15 @@ def main():
     freeze_weights = True
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'inceptionresnetv2_rgbd_all_imagenet_freeze_rmsprop_lr0.001_e10_v1.pth'
-    ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_freeze_rmsprop_lr0.001_e10_v1_ckpt.pth'
-    best_ckpt_save_name = 'inceptionresnetv2_rgbd_all_imagenet_freeze_rmsprop_lr0.001_e10_v1_best_ckpt.pth'
+    weights_save_name = 'inceptionresnetv2_cifar100_imagenet_freeze_rmsprop_lr0.001_e10_v1.pth'
+    ckpt_save_name = 'inceptionresnetv2_cifar100_imagenet_freeze_rmsprop_lr0.001_e10_v1_ckpt.pth'
+    best_ckpt_save_name = 'inceptionresnetv2_cifar100_imagenet_freeze_rmsprop_lr0.001_e10_v1_best_ckpt.pth'
 
     load_order = True
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/inceptionresnetv2_rgbd_all_imagenet_freeze_rmsprop_lr0.001_e10_v1.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/inceptionresnetv2_cifar100_imagenet_freeze_rmsprop_lr0.001_e10_v1.txt'
     ############################################
 
     ## model
