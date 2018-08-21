@@ -295,8 +295,6 @@ def main():
                 for i in range(len(index_group)):
                     index_group[i] = int(index_group[i])
 
-            print (index_groups)
-
 
         train_datasets_by_subset = []
         for index_group in index_groups:
