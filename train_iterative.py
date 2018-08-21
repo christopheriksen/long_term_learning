@@ -685,16 +685,16 @@ def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None
         output, features = model(input)
         loss = criterion(output, target)
 
-        # if using elastic weight consolidation, modify loss
-        if ewc != None:
-            if ewc.mode == 'class':
-                for class_index in range(ewc.num_classes):
-                    # loss += (ewc.importance/ewc.num_classes) * ewc.F[class_index]     # FIXME
-            if ewc.mode == 'dataset':
-                for dataset_index in range(ewc.num_datasets):
-                    # loss += (ewc.discount^dataset_index)(ewc.importance/ewc.num_datasets) * ewc.F[dataset_index]      # FIXME
-            if ewc.mode == 'consolidated':
-                # loss += ewc.importance * ewc.F      # FIXME
+        # # if using elastic weight consolidation, modify loss
+        # if ewc != None:
+        #     if ewc.mode == 'class':
+        #         for class_index in range(ewc.num_classes):
+        #             # loss += (ewc.importance/ewc.num_classes) * ewc.F[class_index]     # FIXME
+        #     if ewc.mode == 'dataset':
+        #         for dataset_index in range(ewc.num_datasets):
+        #             # loss += (ewc.discount^dataset_index)(ewc.importance/ewc.num_datasets) * ewc.F[dataset_index]      # FIXME
+        #     if ewc.mode == 'consolidated':
+        #         # loss += ewc.importance * ewc.F      # FIXME
 
         # measure accuracy and record loss
         prec1, prec5 = accuracy(output, target, topk=(1, 5))
