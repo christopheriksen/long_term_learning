@@ -292,7 +292,7 @@ def main():
             for line in train_lines:
                 index_groups.append(line.split())
             for index_group in index_groups:
-                for i in range(len(index_group))
+                for i in range(len(index_group)):
                     index_group[i] = int(index_group[i])
 
             print (index_groups)
