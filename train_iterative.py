@@ -280,7 +280,7 @@ def main():
             f = open(orderings_dir + subset_instance_order_file, "w")
             for index_group in index_groups:
                 for index in index_group:
-                    f.write(index)
+                    f.write(str(index))
                     f.write(' ')
                 f.write("\n")
             f.close()
