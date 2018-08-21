@@ -419,6 +419,8 @@ def main():
             if selection_method != None:
                 # add stored exemplars to training set
                 combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
+            else:
+                combined_train_dataset = train_dataset
 
         cum_train_loader = torch.utils.data.DataLoader(
             cum_train_dataset, batch_size=batch_size, shuffle=True,
