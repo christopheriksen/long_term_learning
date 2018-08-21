@@ -54,7 +54,7 @@ def main():
     # arch = 'inceptionresnetv2'
 
     # SGD
-    # optimizer_method = 'sgd'
+    optimizer_method = 'sgd'
     # lr = 2.0
     # lr_dec_factor = 0.2
     # lr_dec_freq = 30
