@@ -298,7 +298,7 @@ def main():
 
         train_datasets_by_subset = []
         for index_group in index_groups:
-            dataset = torch.utils.data.Subset(cifar_dataset, index_group)
+            dataset = torch.utils.data.dataset.Subset(cifar_dataset, index_group)
             train_datasets_by_subset.append(dataset)
 
         first_train_dataset = train_datasets_by_subset[0]
