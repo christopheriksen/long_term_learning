@@ -265,7 +265,7 @@ def main():
         if load_order == False:
             num_data_points = 5000
             random_indices = list(range(num_data_points))
-            random_indices = random.shuffle(random_indices)
+            random.shuffle(random_indices)
             index_groups = []
             subset_size = int(math.floor(num_data_points/num_subsets))
 
