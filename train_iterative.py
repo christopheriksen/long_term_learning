@@ -582,38 +582,38 @@ def main():
 
         # only performed on new data (not exemplars)
 
-        if ewc != None:
-            if ewc.mode == 'class':
-                # group train_dataset by class
-                indices_by_class = [[] for i in range(num_classes)]
-                new_data_loader = torch.utils.data.DataLoader(
-                    train_dataset, batch_size=1, shuffle=False,
-                    num_workers=workers, pin_memory=True)
+        # if ewc != None:
+        #     if ewc.mode == 'class':
+        #         # group train_dataset by class
+        #         indices_by_class = [[] for i in range(num_classes)]
+        #         new_data_loader = torch.utils.data.DataLoader(
+        #             train_dataset, batch_size=1, shuffle=False,
+        #             num_workers=workers, pin_memory=True)
 
-                model.eval()
-                for index, (input_img, target) in enumerate(new_data_loader):
-                    target = target.cuda(non_blocking=True)
-                    target = target.data.cpu().numpy()[0]
-                    indices_by_class[target].append(index)
+        #         model.eval()
+        #         for index, (input_img, target) in enumerate(new_data_loader):
+        #             target = target.cuda(non_blocking=True)
+        #             target = target.data.cpu().numpy()[0]
+        #             indices_by_class[target].append(index)
 
-                # calculate fisher information by class
-                for class_index in range(num_classes):
-                    class_dataset = torch.utils.data.dataset.Subset(train_dataset, indices_by_class[class_index])
+        #         # calculate fisher information by class
+        #         for class_index in range(num_classes):
+        #             class_dataset = torch.utils.data.dataset.Subset(train_dataset, indices_by_class[class_index])
 
-                    # calculate fisher information
-                    # ewc.F[class] += new_F         FIXME
-                    # ewc.means[class] = new_mean       FIXME
+        #             # calculate fisher information
+        #             # ewc.F[class] += new_F         FIXME
+        #             # ewc.means[class] = new_mean       FIXME
 
-            if ewc.mode == 'dataset':
-                # calculate fisher information of train_dataset
-                # ewc.F.insert(new_F, 0)        FIXME
-                # ewc.means.insert(new_mean, 0)     FIXME
-                ewc.num_datasets += 1
+        #     if ewc.mode == 'dataset':
+        #         # calculate fisher information of train_dataset
+        #         # ewc.F.insert(new_F, 0)        FIXME
+        #         # ewc.means.insert(new_mean, 0)     FIXME
+        #         ewc.num_datasets += 1
 
-            if ewc.mode == 'consolidated':
-                # calculate fisher information of train_dataset
-                # ewc.F += new_F     FIXME
-                # ewc.mean = new_mean
+        #     if ewc.mode == 'consolidated':
+        #         # calculate fisher information of train_dataset
+        #         # ewc.F += new_F     FIXME
+        #         # ewc.mean = new_mean
 
 
         ## Distillation
