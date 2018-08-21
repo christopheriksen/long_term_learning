@@ -104,7 +104,7 @@ def main():
     # ewc_mode = 'consolidated'
     ewc_lambda = 1
 
-    # num_subsets = 10
+    num_subsets = 10
     instances_per_subset = 10
     # dictionary_size = 2550
     dictionary_size = 5000
