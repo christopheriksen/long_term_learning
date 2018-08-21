@@ -37,10 +37,11 @@ def main():
 
     # dataset = 'imagenet'
     # dataset = 'cifar10'
-    # dataset = 'cifar100'
-    dataset = 'rgbd-object'
+    dataset = 'cifar100'
+    # dataset = 'rgbd-object'
 
-    num_classes = 51
+    # num_classes = 51
+    num_classes = 100
 
 
     arch = 'resnet18'
@@ -49,18 +50,26 @@ def main():
     # arch = 'resnet101'
     # arch = 'resnet152'
 
+    # pretrained_model = True
+    # arch = 'inceptionresnetv2'
+
     # SGD
-    optimizer_method = 'sgd'
+    # optimizer_method = 'sgd'
     # lr = 2.0
     # lr_dec_factor = 0.2
     # lr_dec_freq = 30
     # momentum = 0.0
     # weight_decay = 0.00001 
-    lr = 0.01
+
+    # lr = 0.01
+    # momentum = 0.9
+    # weight_decay = 1e-4
     lr_dec_factor = 0.1
     lr_dec_freq = 30
-    momentum = 0.9
-    weight_decay = 1e-4
+
+    lr = 1e-3
+    momentum = 0.0
+    weight_decay = 0.0
 
     # # Adadelta
     # optimizer_method = 'adadelta'
@@ -74,61 +83,80 @@ def main():
     # RMSprop
     # optimizer_method = 'rmsprop'
 
-    # batch_size = 128
+    # batch_size = 16
     batch_size = 256
     start_epoch = 0
     # epochs = 70
-    epochs = 90
+    epochs = 1
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
 
     load_weights = False
     load_ckpt = False
-    imagenet_finetune = False
-    imagenet_normalization = False
+    imagenet_finetune = True
+    imagenet_normalization = True
     freeze_weights = False
+
+    use_ewc = False
+    ewc_mode = 'class'
+    # ewc_mode = 'dataset'
+    # ewc_mode = 'consolidated'
+    ewc_lambda = 1
 
     # num_subsets = 10
     instances_per_subset = 10
-    dictionary_size = 2550
+    # dictionary_size = 2550
+    dictionary_size = 5000
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = 'mean_approx'
+    selection_method = None
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_rgbd_mean_approx_norm_0.pth'
-    weights_save_name_base = 'resnet18_rgbd_mean_approx_norm_0_'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_1e-3_e1_b256_0.pth'
+    # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
     load_order = True
-    subset_instance_order_file = 'instance_order_0.txt'
-    test_instances_file = 'test_instances_0.txt'
+    subset_instance_order_file = 'cifar100_instance_order_0.txt'
+    # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies_resnet18_rgbd_mean_approx_norm_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_1e-3_e1_b256_0.txt'
     ############################################
 
     ## model
 
-    if imagenet_finetune:
-        # torchvision resnet
-        if arch == 'resnet18':
-            model = models.resnet18(pretrained=True, new_num_classes=num_classes)
-
     # torchvision resnet
     if arch == 'resnet18':
-        model = models.resnet18(num_classes=num_classes)
-    if arch == 'resnet34':
-        model = models.resnet34(num_classes=num_classes)
-    if arch == 'resnet50':
-        model = models.resnet50(num_classes=num_classes)
-    if arch == 'resnet101':
-        model = models.resnet101(num_classes=num_classes)
-    if arch == 'resnet152':
-        model = models.resnet152(num_classes=num_classes)
+        if imagenet_finetune:
+            model = models.resnet18(pretrained=True, new_num_classes=num_classes)
+        else:
+            model = models.resnet18(num_classes=num_classes)
+    # if arch == 'resnet34':
+    #     model = models.resnet34(num_classes=num_classes)
+    # if arch == 'resnet50':
+    #     model = models.resnet50(num_classes=num_classes)
+    # if arch == 'resnet101':
+    #     model = models.resnet101(num_classes=num_classes)
+    # if arch == 'resnet152':
+    #     model = models.resnet152(num_classes=num_classes)
+
+    if pretrained_model:
+        if arch == 'inceptionresnetv2':
+            img_size = 299
+            if imagenet_finetune:
+                model = pretrainedmodels.__dict__['inceptionresnetv2']()
+                if freeze_weights:
+                    for param in model.parameters():
+                        param.requires_grad = False
+                model.last_linear = nn.Linear(1536, num_classes)
+                # for param in model.last_linear.parameters():
+                #     param.requires_grad = True
+            else:
+                model = pretrainedmodels.__dict__['inceptionresnetv2'](num_classes=num_classes, pretrained=False)
 
 
     # load saved weights
@@ -190,6 +218,22 @@ def main():
     #                             momentum=momentum,
     #                             centered=centered)
 
+    if optimizer_method == 'rmsprop':
+        optimizer = torch.optim.RMSprop(filter(lambda p: p.requires_grad, model.parameters()),
+                                    lr = 0.001,
+                                    alpha=0.9,
+                                    eps = 1e-08,
+                                    weight_decay=0,
+                                    momentum=0,
+                                    centered=False)
+
+
+    ## EWC
+    if use_ewc:
+        ewc = EWC(ewc_mode, ewc_lambda, num_classes)
+    else:
+        ewc = None
+
 
 
     ## Data loading code
@@ -198,27 +242,58 @@ def main():
         traindir = data_source_dir+'/cifar100'
         valdir = data_source_dir+'/cifar100'
 
-        if imagenet_normalization:
-            cifar_dataset, test_dataset = utils.load_CIFAR100(traindir, valdir, [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]])      # ImageNet pretrain
+        if pretrained_model:
+            if imagenet_normalization:
+                normalization_params = [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]      # ImageNet pretrain pretrainedmodels
+            else:
+                # normalization_params = None
+                normalization_params = [[0.50704312, 0.48651126, 0.44088557], [1.0, 1.0, 1.0]]
+                # normalization_params = [[0.50704312, 0.48651126, 0.44088557], [0.26177242, 0.25081211, 0.27087295]]
 
         else:
-            # cifar_dataset, test_dataset = utils.load_CIFAR100(traindir, valdir, None)
-            cifar_dataset, test_dataset = utils.load_CIFAR100(traindir, valdir, [[0.50704312, 0.48651126, 0.44088557], [1.0, 1.0, 1.0]])
-            # cifar_dataset, test_dataset = utils.load_CIFAR100(traindir, valdir, [[0.50704312, 0.48651126, 0.44088557], [0.26177242, 0.25081211, 0.27087295]])
+            img_size = 224
+            if imagenet_normalization:
+                normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]      # ImageNet pretrain torchvision
+            else:
+                # normalization_params = None
+                normalization_params = [[0.50704312, 0.48651126, 0.44088557], [1.0, 1.0, 1.0]]
+                # normalization_params = [[0.50704312, 0.48651126, 0.44088557], [0.26177242, 0.25081211, 0.27087295]]
 
+        cifar_dataset, test_dataset = utils.load_CIFAR100(traindir, valdir, img_size, normalization_params)
 
-        num_data_points = 5000
-        random_indices = list(range(num_data_points))
-        random_indices = random.shuffle(random_indices)
-        index_groups = []
-        subset_size = int(math.floor(num_data_points/num_subsets))
+        # randomly sample train data points for each subset
+        if load_order == False:
+            num_data_points = 5000
+            random_indices = list(range(num_data_points))
+            random_indices = random.shuffle(random_indices)
+            index_groups = []
+            subset_size = int(math.floor(num_data_points/num_subsets))
 
-        for i in range(num_subsets-1):
-            prev_index = subset_size*i
-            next_index = subset_size*(i+1)
-            index_groups.append(random_indices[prev_index:next_index])
-        prev_index = subset_size*(num_subsets-1)
-        index_groups.append(random_indices[prev_index:])
+            for i in range(num_subsets-1):
+                prev_index = subset_size*i
+                next_index = subset_size*(i+1)
+                index_groups.append(random_indices[prev_index:next_index])
+            prev_index = subset_size*(num_subsets-1)
+            index_groups.append(random_indices[prev_index:])
+
+            # write order file
+            f = open(orderings_dir + subset_instance_order_file, "w")
+            for index_group in index_groups:
+                for index in index_group:
+                    f.write(index)
+                    f.write(' ')
+                f.write("\n")
+            f.close()
+
+        # read in subset index order per subset from file
+        else:
+            index_groups = []
+            train_lines = [line.rstrip('\n') for line in open(orderings_dir + subset_instance_order_file)]
+            for line in train_lines:
+                index_groups.append(line.split())
+            for index_group in index_groups:
+                for index in index_group:
+                    index = int(index)
 
 
         train_datasets_by_subset = []
@@ -226,6 +301,7 @@ def main():
             dataset = torch.utils.data.Subset(cifar_dataset, index_group)
             train_datasets_by_subset.append(dataset)
 
+        first_train_dataset = train_datasets_by_subset[0]
 
 
 
@@ -262,14 +338,25 @@ def main():
         # data_dir = data_source_dir+'/rgbd-dataset_instances/'
         data_dir = data_source_dir+'/rgbd-dataset/'
 
-        if imagenet_normalization:  # ImageNet pretrain
-            normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]   
+        if pretrained_model:
+            img_size = 299
+            if imagenet_normalization:
+                normalization_params = [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]      # ImageNet pretrain pretrainedmodels
+            else:
+                # normalization_params = None
+                # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+                normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
+                # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
         else:
-            # normalization_params = None
-            # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
-            normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]        # FIXME: norm includes test data
-            # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
+            img_size = 224
+            if imagenet_normalization:
+                normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]      # ImageNet pretrain torchvision
+            else:
+                # normalization_params = None
+                # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+                normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]        # FIXME norm includes test data
+                # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
 
         if load_order:
@@ -294,6 +381,8 @@ def main():
                 f.write(' ')
             f.close()
 
+        first_train_dataset = train_datasets_by_subset[0]
+
         
 
 
@@ -304,6 +393,7 @@ def main():
     cum_train_dataset = None
     exemplar_dataset = None
     cum_train_accuracies = []
+    first_train_accuracies = []
     test_accuracies = []
 
     for subset_iter in range(num_subsets):
@@ -312,24 +402,29 @@ def main():
         val_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
+        first_train_loader = torch.utils.data.DataLoader(
+            first_train_dataset, batch_size=batch_size, shuffle=True,
+            num_workers=workers, pin_memory=True)
         test_loader = torch.utils.data.DataLoader(
             test_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
+
         if subset_iter == 0:
             cum_train_dataset = train_dataset       # cum dataset for test metrics
+            combined_train_dataset = train_dataset
         else:
             cum_train_dataset = torch.utils.data.dataset.ConcatDataset([cum_train_dataset, train_dataset])      # cum dataset for test metrics
 
             # add stored exemplars to training set
-            train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
+            combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
 
         cum_train_loader = torch.utils.data.DataLoader(
             cum_train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
         train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=batch_size, shuffle=True,
+            combined_train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
 
@@ -344,10 +439,10 @@ def main():
 
             start_time = time.time()
 
-            adjust_learning_rate(optimizer, epoch, lr)
+            # adjust_learning_rate(optimizer, epoch, lr)
 
             # train for one epoch
-            train(train_loader, model, criterion, optimizer, epoch, print_freq)
+            train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
             # # evaluate on validation set
             # prec1 = validate(val_loader, model, criterion, print_freq)
@@ -392,107 +487,152 @@ def main():
 
 
 
-        ## Exemplars       
-        exemplar_pool_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=1, shuffle=False,
-            num_workers=workers, pin_memory=True)
+        ## Exemplars 
+        if selection_method != None:      
+            exemplar_pool_loader = torch.utils.data.DataLoader(
+                combined_train_dataset, batch_size=1, shuffle=False,
+                num_workers=workers, pin_memory=True)
 
 
-        indices_by_class = [[] for i in range(num_classes)]
-        features_by_class = [[] for i in range(num_classes)]
+            indices_by_class = [[] for i in range(num_classes)]
+            features_by_class = [[] for i in range(num_classes)]
 
-        model.eval()
-        for index, (input_img, target) in enumerate(train_loader):
+            model.eval()
+            for index, (input_img, target) in enumerate(exemplar_pool_loader):
 
-            output, features = model(input_img)
+                output, features = model(input_img)
 
-            target = target.cuda(non_blocking=True)
-            target = target.data.cpu().numpy()[0]
-            features = features.data.cpu().numpy()[0]
+                target = target.cuda(non_blocking=True)
+                target = target.data.cpu().numpy()[0]
+                features = features.data.cpu().numpy()[0]
 
-            indices_by_class[target].append(index)
+                indices_by_class[target].append(index)
 
-            if normalize_features:
-                features = features/np.linalg.norm(features)
-            features_by_class[target].append(features)
+                if normalize_features:
+                    features = features/np.linalg.norm(features)
+                features_by_class[target].append(features)
 
-
-        for class_index in range(num_classes):
-            indices_by_class[class_index] = np.array(indices_by_class[class_index])
-            features_by_class[class_index] = np.array(features_by_class[class_index])
-
-
-        # selection procedure
-        exemplar_indices_by_class = [[] for i in range(num_classes)]
-
-        if selection_method == 'random':
-            for class_index in range(num_classes):
-                indices_by_class[class_index] = np.random.shuffle(indices_by_class[class_index])
-                exemplar_indices_by_class[class_index] = indices_by_class[class_index][:num_exemplars_per_class]
-
-
-        if selection_method == 'kmedoids':
 
             for class_index in range(num_classes):
-
-                if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
-
-                    # calculate distance matrix
-                    distances = pairwise_distances(features_by_class[class_index], metric=dist_metric)
-                    M, C = kmedoids.kMedoids(distances, num_exemplars_per_class)
-
-                    for index in M:
-                        exemplar_indices_by_class[class_index].append(indices_by_class[class_index][index])
-
-                else:
-                    exemplar_indices_by_class[class_index] = indices_by_class[class_index]
+                indices_by_class[class_index] = np.array(indices_by_class[class_index])
+                features_by_class[class_index] = np.array(features_by_class[class_index])
 
 
-        if selection_method == 'mean_approx':
+            # selection procedure
+            exemplar_indices_by_class = [[] for i in range(num_classes)]
 
+            if selection_method == 'random':
+                for class_index in range(num_classes):
+                    indices_by_class[class_index] = np.random.shuffle(indices_by_class[class_index])
+                    exemplar_indices_by_class[class_index] = indices_by_class[class_index][:num_exemplars_per_class]
+
+
+            if selection_method == 'kmedoids':
+
+                for class_index in range(num_classes):
+
+                    if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
+
+                        # calculate distance matrix
+                        distances = pairwise_distances(features_by_class[class_index], metric=dist_metric)
+                        M, C = kmedoids.kMedoids(distances, num_exemplars_per_class)
+
+                        for index in M:
+                            exemplar_indices_by_class[class_index].append(indices_by_class[class_index][index])
+
+                    else:
+                        exemplar_indices_by_class[class_index] = indices_by_class[class_index]
+
+
+            if selection_method == 'mean_approx':
+
+                for class_index in range(num_classes):
+
+                    if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
+
+                        features_by_class[class_index] = features_by_class[class_index].T
+                                      
+                        # Herding procedure : ranking of the potential exemplars
+                        mu  = np.mean(features_by_class[class_index],axis=1)
+                        w_t = mu
+                        iter_herding     = 0
+                        iter_herding_eff = 0
+                        new_prototypes = []
+                        while (len(new_prototypes) < min(num_exemplars_per_class, len(indices_by_class[class_index]))):
+                            tmp_t   = np.dot(w_t,features_by_class[class_index])
+                            ind_max = np.argmax(tmp_t)
+                            iter_herding_eff += 1
+                            new_prototypes.append(indices_by_class[class_index][ind_max])
+                            w_t = w_t+mu-features_by_class[class_index][:,ind_max]
+
+                        exemplar_indices_by_class[class_index] = new_prototypes
+
+            
+            # save exemplars as dataset
+            exemplar_indices = []
             for class_index in range(num_classes):
+                for exemplar_index in exemplar_indices_by_class[class_index]:
+                    exemplar_indices.append(exemplar_index)
 
-                if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
+            exemplar_dataset = torch.utils.data.dataset.Subset(combined_train_dataset, exemplar_indices)
 
-                    features_by_class[class_index] = features_by_class[class_index].T
-                                  
-                    # Herding procedure : ranking of the potential exemplars
-                    mu  = np.mean(features_by_class[class_index],axis=1)
-                    w_t = mu
-                    iter_herding     = 0
-                    iter_herding_eff = 0
-                    new_prototypes = []
-                    while (len(new_prototypes) < min(num_exemplars_per_class, len(indices_by_class[class_index]))):
-                        tmp_t   = np.dot(w_t,features_by_class[class_index])
-                        ind_max = np.argmax(tmp_t)
-                        iter_herding_eff += 1
-                        new_prototypes.append(indices_by_class[class_index][ind_max])
-                        w_t = w_t+mu-features_by_class[class_index][:,ind_max]
 
-                    exemplar_indices_by_class[class_index] = new_prototypes
 
-        
-        # save exemplars as dataset
-        exemplar_indices = []
-        for class_index in range(num_classes):
-            for exemplar_index in exemplar_indices_by_class[class_index]:
-                exemplar_indices.append(exemplar_index)
+        ## EWC
 
-        exemplar_dataset = torch.utils.data.dataset.Subset(train_dataset, exemplar_indices)
+        # only performed on new data (not exemplars)
+
+        if ewc != None:
+            if ewc.mode == 'class':
+                # group train_dataset by class
+                indices_by_class = [[] for i in range(num_classes)]
+                new_data_loader = torch.utils.data.DataLoader(
+                    train_dataset, batch_size=1, shuffle=False,
+                    num_workers=workers, pin_memory=True)
+
+                model.eval()
+                for index, (input_img, target) in enumerate(new_data_loader):
+                    target = target.cuda(non_blocking=True)
+                    target = target.data.cpu().numpy()[0]
+                    indices_by_class[target].append(index)
+
+                # calculate fisher information by class
+                for class_index in range(num_classes):
+                    class_dataset = torch.utils.data.dataset.Subset(train_dataset, indices_by_class[class_index])
+
+                    # calculate fisher information
+                    # ewc.F[class] += new_F         FIXME
+                    # ewc.means[class] = new_mean       FIXME
+
+            if ewc.mode == 'dataset':
+                # calculate fisher information of train_dataset
+                # ewc.F.insert(new_F, 0)        FIXME
+                # ewc.means.insert(new_mean, 0)     FIXME
+                ewc.num_datasets += 1
+
+            if ewc.mode == 'consolidated':
+                # calculate fisher information of train_dataset
+                # ewc.F += new_F     FIXME
+                # ewc.mean = new_mean
+
+
+        ## Distillation
 
 
 
         # validate(val_loader, model, criterion, print_freq)
         cum_train_accuracy = validate(cum_train_loader, model, criterion, print_freq)
+        first_train_accuracy = validate(first_train_loader, model, criterion, print_freq)
         test_accuracy = validate(test_loader, model, criterion, print_freq)
 
         cum_train_accuracies.append(cum_train_accuracy.data.cpu().numpy())
+        first_train_accuracies.append(first_train_accuracy.data.cpu().numpy())
         test_accuracies.append(test_accuracy.data.cpu().numpy())
 
 
-        # save model
-        print ("Saving model")
-        torch.save(model.state_dict(), weights_dir + weights_save_name_base + str() + '.pth')
+        # # save model
+        # print ("Saving model")
+        # torch.save(model.state_dict(), weights_dir + weights_save_name_base + str() + '.pth')
         # torch.save(model.state_dict(), weights_dir + weights_save_name)
 
 
@@ -502,7 +642,7 @@ def main():
 
 
     test_accuracy = validate(test_loader, model, criterion, print_freq)
-    cum_train_accuracy = validate(cum_train_loader, model, criterion, print_freq)
+    # cum_train_accuracy = validate(cum_train_loader, model, criterion, print_freq)
 
 
 
@@ -513,6 +653,10 @@ def main():
         f.write(str(accuracy))
         f.write ('\n')
     f.write ('\n')
+    for accuracy in first_train_accuracies:
+        f.write(str(accuracy))
+        f.write ('\n')
+    f.write('\n')
     for accuracy in test_accuracies:
         f.write(str(accuracy))
         f.write ('\n')
@@ -520,7 +664,7 @@ def main():
 
 
 
-def train(train_loader, model, criterion, optimizer, epoch, print_freq):
+def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -540,6 +684,17 @@ def train(train_loader, model, criterion, optimizer, epoch, print_freq):
         # compute output
         output, features = model(input)
         loss = criterion(output, target)
+
+        # if using elastic weight consolidation, modify loss
+        if ewc != None:
+            if ewc.mode == 'class':
+                for class_index in range(ewc.num_classes):
+                    # loss += (ewc.importance/ewc.num_classes) * ewc.F[class_index]     # FIXME
+            if ewc.mode == 'dataset':
+                for dataset_index in range(ewc.num_datasets):
+                    # loss += (ewc.discount^dataset_index)(ewc.importance/ewc.num_datasets) * ewc.F[dataset_index]      # FIXME
+            if ewc.mode == 'consolidated':
+                # loss += ewc.importance * ewc.F      # FIXME
 
         # measure accuracy and record loss
         prec1, prec5 = accuracy(output, target, topk=(1, 5))
