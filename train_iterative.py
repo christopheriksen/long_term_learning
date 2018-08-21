@@ -120,7 +120,7 @@ def main():
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
-    load_order = False
+    load_order = True
     subset_instance_order_file = 'cifar100_instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
