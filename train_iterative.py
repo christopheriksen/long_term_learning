@@ -84,10 +84,10 @@ def main():
     # optimizer_method = 'rmsprop'
 
     # batch_size = 16
-    batch_size = 10
+    batch_size = 256
     start_epoch = 0
     # epochs = 70
-    epochs = 1
+    epochs = 10
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
@@ -111,11 +111,11 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = None
+    selection_method = 'mean_approx'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-2_e1_b10_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -124,7 +124,7 @@ def main():
     subset_instance_order_file = 'cifar100_instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-2_e1_b10_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_0.txt'
     ############################################
 
     ## model
@@ -412,23 +412,23 @@ def main():
 
         if subset_iter == 0:
             cum_train_dataset = train_dataset       # cum dataset for test metrics
-            combined_train_dataset = train_dataset
+            # combined_train_dataset = train_dataset
         else:
             cum_train_dataset = torch.utils.data.dataset.ConcatDataset([cum_train_dataset, train_dataset])      # cum dataset for test metrics
 
-            if selection_method != None:
-                # add stored exemplars to training set
-                combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
-            else:
-                combined_train_dataset = train_dataset
+            # if selection_method != None:
+            #     # add stored exemplars to training set
+            #     combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
+            # else:
+            #     combined_train_dataset = train_dataset
 
         cum_train_loader = torch.utils.data.DataLoader(
             cum_train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
-        train_loader = torch.utils.data.DataLoader(
-            combined_train_dataset, batch_size=batch_size, shuffle=True,
-            num_workers=workers, pin_memory=True)
+        # train_loader = torch.utils.data.DataLoader(
+        #     combined_train_dataset, batch_size=batch_size, shuffle=True,
+        #     num_workers=workers, pin_memory=True)
 
 
 
@@ -445,7 +445,9 @@ def main():
             # adjust_learning_rate(optimizer, epoch, lr)
 
             # train for one epoch
-            train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
+            # train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
+
+            train_distillation(train_dataset, exemplar_dataset, model, criterion, optimizer, batch_size)
 
             # # evaluate on validation set
             # prec1 = validate(val_loader, model, criterion, print_freq)
@@ -483,7 +485,7 @@ def main():
             print ("Epoch time: " + str(time.time() - start_time))
 
 
-        # validate(val_loader, model, criterion, print_freq)
+        validate(val_loader, model, criterion, print_freq)
 
         # best_checkpoint = torch.load(weights_dir + best_ckpt_save_name)
         # model.load_state_dict(best_checkpoint['state_dict'])
@@ -491,7 +493,14 @@ def main():
 
 
         ## Exemplars 
-        if selection_method != None:      
+        if selection_method != None:  
+
+            if subset_iter != 0:
+                # add stored exemplars to training set
+                combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
+            else:
+                combined_train_dataset = train_dataset
+
             exemplar_pool_loader = torch.utils.data.DataLoader(
                 combined_train_dataset, batch_size=1, shuffle=False,
                 num_workers=workers, pin_memory=True)
@@ -665,6 +674,56 @@ def main():
         f.write ('\n')
     f.write('\n')
 
+
+
+def train_distillation(train_dataset, coreset, model, criterion, optimizer, batch_size):
+
+    # switch to train mode
+    model.train()
+    loss = 0.0
+
+
+    # distillation loss if not first iteration
+    if coreset != None:
+        coreset_loader = torch.utils.data.DataLoader(
+            coreset, batch_size=1, shuffle=False,
+            num_workers=workers, pin_memory=True)
+
+        # Store network outputs with pre-update parameters
+        old_output = torch.zeros(len(coreset), num_classes).cuda()
+        for index, input, target in coreset_loader:
+            input = Variable(input).cuda()
+            index = index.cuda()
+            output, features = model(input)
+            g = F.sigmoid(output)
+            old_output[index] = g.data
+        old_output = Variable(old_output).cuda()
+
+        # distillation loss for exemplars
+        for index, input, target in enumerate(coreset_loader):
+            # compute output
+            output, features = model(input)
+
+            loss += torch.nn.BCELoss(F.sigmoid(output), old_output[index])
+
+
+    # cross entropy loss over new train data
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=batch_size, shuffle=True,
+        num_workers=workers, pin_memory=True)
+    for i, (input, target) in enumerate(train_loader):
+        target = target.cuda(non_blocking=True)
+
+        # compute output
+        output, features = model(input)
+
+        loss += criterion(output, target)
+
+
+    # compute gradient and do SGD step
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
 
 def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None):
