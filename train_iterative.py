@@ -684,6 +684,8 @@ def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None
 
         target = target.cuda(non_blocking=True)
 
+        print (target.data.cpu().numpy()[0])
+
         # compute output
         output, features = model(input)
         loss = criterion(output, target)
