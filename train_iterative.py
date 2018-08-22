@@ -684,11 +684,11 @@ def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None
 
         target = target.cuda(non_blocking=True)
 
-        print (target.data.cpu().numpy().shape)
-
         # compute output
         output, features = model(input)
         loss = criterion(output, target)
+
+        print (output.data.cpu().numpy())
 
         # # if using elastic weight consolidation, modify loss
         # if ewc != None:
