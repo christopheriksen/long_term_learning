@@ -67,7 +67,7 @@ def main():
     lr_dec_factor = 0.1
     lr_dec_freq = 30
 
-    lr = 1e-2
+    lr = 1e-3
     momentum = 0.0
     weight_decay = 0.0
 
@@ -87,7 +87,7 @@ def main():
     batch_size = 10
     start_epoch = 0
     # epochs = 70
-    epochs = 10
+    epochs = 1
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
@@ -115,7 +115,7 @@ def main():
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-2_e10_b10_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-3_e1_b10_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -124,7 +124,7 @@ def main():
     subset_instance_order_file = 'cifar100_instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-2_e10_b10_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-3_e1_b10_0.txt'
     ############################################
 
     ## model
