@@ -702,7 +702,6 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
             (input, target) = combined_train_dataset[index]
             input = input.cuda(non_blocking=True)
             input = input.unsqueeze(0)
-            target = target.unsqueeze(0)
             # index = index.cuda(non_blocking=True)
             output, features = model(input)
             softmax_output = torch.nn.functional.sigmoid(output)
@@ -735,7 +734,7 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 # distillation loss for coreset
                 else:
                     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-                    loss += distillation_criteron(torch.nn.functional.sigmoid(output), old_output[index])
+                    loss += distillation_criteron(torch.nn.functional.sigmoid(output).data, old_output[index])
                     print ("bce")
                     print (loss)
 
