@@ -737,8 +737,6 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
                     new_output = torch.nn.functional.sigmoid(output).data
                     new_output = new_output.cuda(non_blocking=True).squeeze()
-                    print (new_output)
-                    print (old_output[index])
                     loss += distillation_criteron(new_output, old_output[index])
                     # print ("bce")
                     # print (loss.shape)
