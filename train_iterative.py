@@ -720,7 +720,7 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
             loss = torch.Tensor([0.0]).cuda(non_blocking=True)
             batch_subset = torch.utils.data.dataset.Subset(combined_train_dataset, batch)
             batch_loader = torch.utils.data.DataLoader(
-                batch_subset, batch_size=batch_size, shuffle=False,
+                batch_subset, batch_size=1, shuffle=False,
                 num_workers=workers, pin_memory=True)
             for i, (input, target) in enumerate(batch_loader):
                 index = batch[i]
