@@ -702,7 +702,7 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
             output, features = model(input)
             softmax_output = F.sigmoid(output)
             old_output[index] = softmax_output.data
-        old_output = Variable(old_output).cuda()
+        old_output = old_output.cuda(non_blocking=True)
 
         # iterate over data
         model.train()
