@@ -688,6 +688,8 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
     # switch to train mode
     model.train()
 
+    batch_criterion = nn.CrossEntropyLoss(reduction='sum').cuda()
+
     if coreset != None:
         num_new_data = len(train_dataset)
         num_coreset = len(coreset)
@@ -730,7 +732,7 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 target = target.cuda(non_blocking=True)
                 output, features = model(input)
 
-                print (criterion(output, target))
+                print (batch_criterion(output, target))
 
 
 
@@ -764,23 +766,15 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 #     # print (loss)
 
                 if first:
-                    instance_loss  = criterion(output, target)
-                    print (instance_loss)
-                    instance_loss = instance_loss/len(batch)
-                    print (instance_loss)
-                    loss  = instance_loss
+                    loss  = criterion(output, target)
                 else:
-                    instance_loss  = criterion(output, target)
-                    print (instance_loss)
-                    instance_loss = instance_loss/len(batch)
-                    print (instance_loss)
-                    loss  += instance_loss
+                    loss  += criterion(output, target)
 
                 first = False
 
             print (loss)
-            # loss = loss/float(len(batch))
-            # print (loss)
+            loss = loss/len(batch)
+            print (loss)
             print ()
 
             # compute gradient and do SGD step
