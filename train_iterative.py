@@ -84,7 +84,7 @@ def main():
     # optimizer_method = 'rmsprop'
 
     # batch_size = 16
-    batch_size = 1
+    batch_size = 16
     start_epoch = 0
     # epochs = 70
     epochs = 10
@@ -451,7 +451,7 @@ def main():
             # train for one epoch
             # train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
-            train_distillation(train_loader, exemplar_dataset, model, criterion, optimizer, batch_size, workers)
+            train_distillation(train_loader, exemplar_dataset, model, criterion, optimizer, batch_size, workers, num_classes)
 
             # # evaluate on validation set
             # prec1 = validate(val_loader, model, criterion, print_freq)
@@ -680,10 +680,9 @@ def main():
 
 
 
-def train_distillation(train_loader, coreset, model, criterion, optimizer, batch_size, workers):
+def train_distillation(train_loader, coreset, model, criterion, optimizer, batch_size, workers, num_classes):
 
-    # total_loss = 0.0
-
+    total_loss = None
 
     # distillation loss if not first iteration
     if coreset != None:
@@ -710,8 +709,10 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
 
             loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
 
-            print (loss)
-            print ()
+            if total_loss == None:
+                total_loss = loss
+            else:
+                total_loss += loss
 
 
     # cross entropy loss over new train data
@@ -724,15 +725,18 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
 
         loss = criterion(output, target)
 
-        print (loss)
-        print ()
-        print ()
+        if total_loss == None:
+            total_loss = loss
+        else:
+            total_loss += loss
+
+        print (total_loss)
 
 
-    # # compute gradient and do SGD step
-    # optimizer.zero_grad()
-    # loss.backward()
-    # optimizer.step()
+    # compute gradient and do SGD step
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
 
 def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None):
