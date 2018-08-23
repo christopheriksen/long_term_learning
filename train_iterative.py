@@ -717,7 +717,6 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
         for batch in batch_indices:
 
             # first = True
-            num = 0
             loss = torch.Tensor([0.0]).cuda(non_blocking=True)
             batch_subset = torch.utils.data.dataset.Subset(combined_train_dataset, batch)
             batch_loader = torch.utils.data.DataLoader(
@@ -747,12 +746,8 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 #     # print (loss)
 
                 loss += criterion(output, target)
-                num += 1
 
-            print (loss)
             loss = loss/float(len(batch))
-            print (loss)
-            print ()
 
             # compute gradient and do SGD step
             optimizer.zero_grad()
