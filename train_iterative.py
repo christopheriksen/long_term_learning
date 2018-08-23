@@ -737,20 +737,20 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                     loss.backward()
                     optimizer.step()
 
-                # distillation loss for coreset
-                else:
-                    # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-                    new_output = torch.nn.functional.sigmoid(output).data
-                    new_output = new_output.cuda(non_blocking=True).squeeze()
-                    loss = distillation_criteron(new_output, old_output[index])
-                    # print ("bce")
-                    # print (loss.shape)
-                    # print (loss)
+                # # distillation loss for coreset
+                # else:
+                #     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
+                #     new_output = torch.nn.functional.sigmoid(output).data
+                #     new_output = new_output.cuda(non_blocking=True).squeeze()
+                #     loss = distillation_criteron(new_output, old_output[index])
+                #     # print ("bce")
+                #     # print (loss.shape)
+                #     # print (loss)
 
-                    # compute gradient and do SGD step
-                    optimizer.zero_grad()
-                    loss.backward()
-                    optimizer.step()
+                #     # compute gradient and do SGD step
+                #     optimizer.zero_grad()
+                #     loss.backward()
+                #     optimizer.step()
 
 
     else:
