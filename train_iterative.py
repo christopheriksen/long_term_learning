@@ -684,7 +684,7 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
 
     # switch to train mode
     model.train()
-    loss = 0.0
+    # loss = 0.0
 
 
     # # distillation loss if not first iteration
@@ -718,13 +718,13 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
         # compute output
         output, features = model(input)
 
-        loss += criterion(output, target)
+        loss = criterion(output, target)
 
 
-    # compute gradient and do SGD step
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+        # compute gradient and do SGD step
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
 
 def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None):
