@@ -688,6 +688,8 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
         total_num = num_new_data + num_coreset
         combined_train_dataset = torch.utils.data.dataset.ConcatDataset([coreset, train_dataset])
 
+        print (num_coreset)
+
         print (combined_train_dataset[0])
         print (coreset[0])
 
