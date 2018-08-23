@@ -636,14 +636,14 @@ def main():
 
 
 
-        # # validate(val_loader, model, criterion, print_freq)
-        # cum_train_accuracy = validate(cum_train_loader, model, criterion, print_freq)
-        # first_train_accuracy = validate(first_train_loader, model, criterion, print_freq)
-        # test_accuracy = validate(test_loader, model, criterion, print_freq)
+        # validate(val_loader, model, criterion, print_freq)
+        cum_train_accuracy = validate(cum_train_loader, model, criterion, print_freq)
+        first_train_accuracy = validate(first_train_loader, model, criterion, print_freq)
+        test_accuracy = validate(test_loader, model, criterion, print_freq)
 
-        # cum_train_accuracies.append(cum_train_accuracy.data.cpu().numpy())
-        # first_train_accuracies.append(first_train_accuracy.data.cpu().numpy())
-        # test_accuracies.append(test_accuracy.data.cpu().numpy())
+        cum_train_accuracies.append(cum_train_accuracy.data.cpu().numpy())
+        first_train_accuracies.append(first_train_accuracy.data.cpu().numpy())
+        test_accuracies.append(test_accuracy.data.cpu().numpy())
 
 
         # # save model
