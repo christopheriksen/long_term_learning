@@ -83,8 +83,7 @@ def main():
     # RMSprop
     # optimizer_method = 'rmsprop'
 
-    # batch_size = 16
-    batch_size = 32
+    batch_size = 16
     start_epoch = 0
     # epochs = 70
     epochs = 10
@@ -115,7 +114,7 @@ def main():
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_16_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -124,7 +123,7 @@ def main():
     subset_instance_order_file = 'cifar100_instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_16_0.txt'
     ############################################
 
     ## model
@@ -732,7 +731,7 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
                 # distillation loss for coreset
                 else:
                     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-                    loss += torch.nn.BCELoss(F.sigmoid(output), old_output[index])
+                    loss += torch.nn.BCELoss(torch.nn.functional.sigmoid(output), old_output[index])
 
             # compute gradient and do SGD step
             optimizer.zero_grad()
