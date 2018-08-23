@@ -447,7 +447,7 @@ def main():
             # train for one epoch
             # train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
-            train_distillation(train_dataset, exemplar_dataset, model, criterion, optimizer, batch_size)
+            train_distillation(train_dataset, exemplar_dataset, model, criterion, optimizer, batch_size, workers)
 
             # # evaluate on validation set
             # prec1 = validate(val_loader, model, criterion, print_freq)
@@ -676,7 +676,7 @@ def main():
 
 
 
-def train_distillation(train_dataset, coreset, model, criterion, optimizer, batch_size):
+def train_distillation(train_dataset, coreset, model, criterion, optimizer, batch_size, workers):
 
     # switch to train mode
     model.train()
