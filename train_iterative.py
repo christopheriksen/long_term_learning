@@ -682,8 +682,6 @@ def main():
 
 def train_distillation(train_loader, coreset, model, criterion, optimizer, batch_size, workers):
 
-    # switch to train mode
-    model.train()
     # total_loss = 0.0
 
 
@@ -694,6 +692,7 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
             num_workers=workers, pin_memory=True)
 
         # Store network outputs with pre-update parameters
+        model.eval()
         old_output = torch.zeros(len(coreset), num_classes).cuda()
         for index, input, target in coreset_loader:
             input = Variable(input).cuda()
@@ -704,6 +703,7 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
         old_output = Variable(old_output).cuda()
 
         # distillation loss for exemplars
+        model.train()
         for index, input, target in enumerate(coreset_loader):
             # compute output
             output, features = model(input)
@@ -715,6 +715,7 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
 
 
     # cross entropy loss over new train data
+    model.train()
     for i, (input, target) in enumerate(train_loader):
         target = target.cuda(non_blocking=True)
 
