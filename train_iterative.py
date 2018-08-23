@@ -689,11 +689,11 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
     else:
         combined_train_dataset = train_dataset
 
-    train_loader = torch.utils.data.DataLoader(
+    combined_train_loader = torch.utils.data.DataLoader(
         combined_train_dataset, batch_size=batch_size, shuffle=True,
         num_workers=workers, pin_memory=True)
 
-    for indices, inputs, targets in enumerate(coreset_loader):
+    for indices, inputs, targets in enumerate(combined_train_loader):
         print (indices)
 
 
