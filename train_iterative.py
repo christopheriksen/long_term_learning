@@ -191,6 +191,7 @@ def main():
 
     ## define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().cuda()
+    distillation_criterion = torch.nn.BCELoss().cuda()
 
     # SGD
     if optimizer_method == 'sgd':
@@ -450,7 +451,7 @@ def main():
             # train for one epoch
             # train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
-            train_distillation(train_dataset, exemplar_dataset, model, criterion, optimizer, batch_size, workers, num_classes)
+            train_distillation(train_dataset, exemplar_dataset, model, criterion, distillation_criterion, optimizer, batch_size, workers, num_classes)
 
             # # evaluate on validation set
             # prec1 = validate(val_loader, model, criterion, print_freq)
@@ -682,7 +683,7 @@ def main():
 
 
 
-def train_distillation(train_dataset, coreset, model, criterion, optimizer, batch_size, workers, num_classes):
+def train_distillation(train_dataset, coreset, model, criterion, distillation_criteron, optimizer, batch_size, workers, num_classes):
 
     if coreset != None:
         num_new_data = len(train_dataset)
@@ -731,7 +732,7 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
                 # distillation loss for coreset
                 else:
                     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-                    loss += torch.nn.BCELoss(torch.nn.functional.sigmoid(output), old_output[index])
+                    loss += distillation_criteron(torch.nn.functional.sigmoid(output), old_output[index])
 
             # compute gradient and do SGD step
             optimizer.zero_grad()
