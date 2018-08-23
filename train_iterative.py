@@ -430,9 +430,9 @@ def main():
         #     combined_train_dataset, batch_size=batch_size, shuffle=True,
         #     num_workers=workers, pin_memory=True)
 
-        train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=batch_size, shuffle=True,
-            num_workers=workers, pin_memory=True)
+        # train_loader = torch.utils.data.DataLoader(
+        #     train_dataset, batch_size=batch_size, shuffle=True,
+        #     num_workers=workers, pin_memory=True)
 
 
 
@@ -451,7 +451,7 @@ def main():
             # train for one epoch
             # train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
-            train_distillation(train_loader, exemplar_dataset, model, criterion, optimizer, batch_size, workers, num_classes)
+            train_distillation(train_dataset, exemplar_dataset, model, criterion, optimizer, batch_size, workers, num_classes)
 
             # # evaluate on validation set
             # prec1 = validate(val_loader, model, criterion, print_freq)
@@ -680,66 +680,76 @@ def main():
 
 
 
-def train_distillation(train_loader, coreset, model, criterion, optimizer, batch_size, workers, num_classes):
+def train_distillation(train_dataset, coreset, model, criterion, optimizer, batch_size, workers, num_classes):
 
-    total_loss = torch.Tensor([0.0])
-    total_loss = total_loss.cuda(non_blocking=True)
+    num_new_data = len(train_dataset)
+    num_coreset = len(coreset)
+    combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, coreset])
 
-    # distillation loss if not first iteration
-    if coreset != None:
-        coreset_loader = torch.utils.data.DataLoader(
-            coreset, batch_size=1, shuffle=False,
-            num_workers=workers, pin_memory=True)
+    train_loader = torch.utils.data.DataLoader(
+        combined_train_dataset, batch_size=batch_size, shuffle=True,
+        num_workers=workers, pin_memory=True)
 
-        # Store network outputs with pre-update parameters
-        model.eval()
-        old_output = torch.zeros(len(coreset), num_classes).cuda()
-        for index, input, target in coreset_loader:
-            input = Variable(input).cuda()
-            index = index.cuda()
-            output, features = model(input)
-            g = F.sigmoid(output)
-            old_output[index] = g.data
-        old_output = Variable(old_output).cuda()
-
-        # distillation loss for exemplars
-        model.train()
-        for index, input, target in enumerate(coreset_loader):
-            # compute output
-            output, features = model(input)
-
-            loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-
-            if total_loss != None:
-                total_loss += loss
-            else:
-                total_loss = loss
+    for indices, inputs, targets in enumerate(coreset_loader):
+        print (indices)
 
 
-    # cross entropy loss over new train data
-    model.train()
-    for i, (input, target) in enumerate(train_loader):
-        target = target.cuda(non_blocking=True)
 
-        # compute output
-        output, features = model(input)
+    # # distillation loss if not first iteration
+    # if coreset != None:
+    #     coreset_loader = torch.utils.data.DataLoader(
+    #         coreset, batch_size=1, shuffle=False,
+    #         num_workers=workers, pin_memory=True)
 
-        loss = criterion(output, target)
+    #     # Store network outputs with pre-update parameters
+    #     model.eval()
+    #     old_output = torch.zeros(len(coreset), num_classes).cuda()
+    #     for index, input, target in coreset_loader:
+    #         input = Variable(input).cuda()
+    #         index = index.cuda()
+    #         output, features = model(input)
+    #         g = F.sigmoid(output)
+    #         old_output[index] = g.data
+    #     old_output = Variable(old_output).cuda()
 
-        # if total_loss != None:
-        #     total_loss += loss
-        # else:
-        #     total_loss = loss
+    #     # distillation loss for exemplars
+    #     model.train()
+    #     for index, input, target in enumerate(coreset_loader):
+    #         # compute output
+    #         output, features = model(input)
 
-        total_loss += loss
+    #         loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
 
-        print (total_loss)
+    #         if total_loss != None:
+    #             total_loss += loss
+    #         else:
+    #             total_loss = loss
 
 
-    # compute gradient and do SGD step
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+    # # cross entropy loss over new train data
+    # model.train()
+    # for i, (input, target) in enumerate(train_loader):
+    #     target = target.cuda(non_blocking=True)
+
+    #     # compute output
+    #     output, features = model(input)
+
+    #     loss = criterion(output, target)
+
+    #     # if total_loss != None:
+    #     #     total_loss += loss
+    #     # else:
+    #     #     total_loss = loss
+
+    #     total_loss += loss
+
+    #     print (total_loss)
+
+
+    # # compute gradient and do SGD step
+    # optimizer.zero_grad()
+    # loss.backward()
+    # optimizer.step()
 
 
 def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None):
