@@ -762,11 +762,11 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 #     # print (loss.shape)
                 #     # print (loss)
 
-                loss += criterion(output, target)
+                loss += (criterion(output, target)/float(len(batch)))
 
             print (loss)
-            loss = loss/float(len(batch))
-            print (loss)
+            # loss = loss/float(len(batch))
+            # print (loss)
             print ()
 
             # compute gradient and do SGD step
