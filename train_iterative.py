@@ -709,10 +709,10 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
 
             loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
 
-            if total_loss == None:
-                total_loss = loss
-            else:
+            if total_loss != None:
                 total_loss += loss
+            else:
+                total_loss = loss
 
 
     # cross entropy loss over new train data
@@ -725,10 +725,10 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
 
         loss = criterion(output, target)
 
-        if total_loss == None:
-            total_loss = loss
-        else:
+        if total_loss != None:
             total_loss += loss
+        else:
+            total_loss = loss
 
         print (total_loss)
 
