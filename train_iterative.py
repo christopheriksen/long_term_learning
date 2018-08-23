@@ -695,9 +695,11 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
         combined_train_dataset, batch_size=batch_size, shuffle=True,
         num_workers=workers, pin_memory=True)
 
-    print (torch.utils.data.dataset.BatchSampler(torch.utils.data.dataset.RandomSampler(range(total_num)), batch_size=batch_size, drop_last=False))
+    print (torch.utils.data.sampler.BatchSampler(torch.utils.data.sampler.RandomSampler(range(total_num)), batch_size=batch_size, drop_last=False))
 
-    print(torch.utils.data.dataset.SubsetRandomSampler(list(range(total_num)), batch_size=batch_size, drop_last=False))
+    print ()
+
+    print(torch.utils.data.sampler.SubsetRandomSampler(list(range(total_num)), batch_size=batch_size, drop_last=False))
 
     # for batch in combined_train_loader:
     #     print (batch)
