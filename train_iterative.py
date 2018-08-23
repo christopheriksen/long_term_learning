@@ -84,7 +84,7 @@ def main():
     # optimizer_method = 'rmsprop'
 
     # batch_size = 16
-    batch_size = 16
+    batch_size = 32
     start_epoch = 0
     # epochs = 70
     epochs = 10
@@ -709,8 +709,8 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
         batch_indices = list(torch.utils.data.sampler.BatchSampler(torch.utils.data.sampler.RandomSampler(range(total_num)), batch_size=batch_size, drop_last=False))
         for batch in batch_indices:
 
-            first = True
-            # loss = torch.Tensor([0.0]).cuda()
+            # first = True
+            loss = torch.Tensor([0.0]).cuda(non_blocking=True)
             batch_subset = torch.utils.data.dataset.Subset(combined_train_dataset, batch)
             batch_loader = torch.utils.data.DataLoader(
                 batch_subset, batch_size=1, shuffle=False,
@@ -722,56 +722,24 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
 
                 # new data
                 if index >= num_coreset:
-                    instance_loss = criterion(output, target)
+                    # instance_loss = criterion(output, target)
+                    loss += criterion(output, target)
 
                 # distillation loss for coreset
                 else:
-                    instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
+                    # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
+                    loss += torch.nn.BCELoss(F.sigmoid(output), old_output[index])
 
-                if first:
-                    loss = instance_loss
-                else:
-                    loss += instance_loss
-                first = False
+                # if first:
+                #     loss = instance_loss
+                # else:
+                #     loss += instance_loss
+                # first = False
 
             # compute gradient and do SGD step
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
-
-
-
-
-            # first = True
-            # # loss = torch.Tensor([0.0]).cuda()
-            # for index in batch:
-            #     (input, target) = combined_train_dataset[index]
-            #     input = input.cuda(non_blocking=True)
-            #     input = input.unsqueeze(0)
-            #     target = torch.LongTensor(target).cuda(non_blocking=True)
-            #     target = target.unsqueeze(0)
-            #     # target = target.cuda(non_blocking=True)
-            #     output, features = model(input)
-
-            #     # new data
-            #     if index >= num_coreset:
-            #         instance_loss = criterion(output, target)
-
-            #     # distillation loss for coreset
-            #     else:
-            #         instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-
-            #     if first:
-            #         loss = instance_loss
-            #     else:
-            #         loss += instance_loss
-            #     first = False
-
-            # # compute gradient and do SGD step
-            # optimizer.zero_grad()
-            # loss.backward()
-            # optimizer.step()
 
 
     else:
@@ -788,72 +756,6 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
-
-
-    # for batch in combined_train_loader:
-    #     print (batch)
-
-    # for indices, (inputs, targets) in enumerate(combined_train_loader):
-    #     print (indices)
-
-
-
-    # # distillation loss if not first iteration
-    # if coreset != None:
-    #     coreset_loader = torch.utils.data.DataLoader(
-    #         coreset, batch_size=1, shuffle=False,
-    #         num_workers=workers, pin_memory=True)
-
-    #     # Store network outputs with pre-update parameters
-    #     model.eval()
-    #     old_output = torch.zeros(len(coreset), num_classes).cuda()
-    #     for index, input, target in coreset_loader:
-    #         input = Variable(input).cuda()
-    #         index = index.cuda()
-    #         output, features = model(input)
-    #         g = F.sigmoid(output)
-    #         old_output[index] = g.data
-    #     old_output = Variable(old_output).cuda()
-
-    #     # distillation loss for exemplars
-    #     model.train()
-    #     for index, input, target in enumerate(coreset_loader):
-    #         # compute output
-    #         output, features = model(input)
-
-    #         loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-
-    #         if total_loss != None:
-    #             total_loss += loss
-    #         else:
-    #             total_loss = loss
-
-
-    # # cross entropy loss over new train data
-    # model.train()
-    # for i, (input, target) in enumerate(train_loader):
-    #     target = target.cuda(non_blocking=True)
-
-    #     # compute output
-    #     output, features = model(input)
-
-    #     loss = criterion(output, target)
-
-    #     # if total_loss != None:
-    #     #     total_loss += loss
-    #     # else:
-    #     #     total_loss = loss
-
-    #     total_loss += loss
-
-    #     print (total_loss)
-
-
-    # # compute gradient and do SGD step
-    # optimizer.zero_grad()
-    # loss.backward()
-    # optimizer.step()
 
 
 def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None):
