@@ -590,10 +590,10 @@ def main():
                 for exemplar_index in exemplar_indices_by_class[class_index]:
                     exemplar_indices.append(exemplar_index)
 
-            print ("Num exemplar indices: " + str(len(exemplar_indices)))
+            # print ("Num exemplar indices: " + str(len(exemplar_indices)))
 
             exemplar_dataset = torch.utils.data.dataset.Subset(combined_train_dataset, exemplar_indices)
-            print ("Num exemplar dataset: " + str(len(exemplar_dataset)))
+            # print ("Num exemplar dataset: " + str(len(exemplar_dataset)))
 
 
 
@@ -691,11 +691,6 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
         total_num = num_new_data + num_coreset
         combined_train_dataset = torch.utils.data.dataset.ConcatDataset([coreset, train_dataset])
 
-        print (num_coreset)
-
-        print (combined_train_dataset[0])
-        print (coreset[0])
-
         # combined_train_loader = torch.utils.data.DataLoader(
         #     combined_train_dataset, batch_size=batch_size, shuffle=True,
         #     num_workers=workers, pin_memory=True)
@@ -706,6 +701,7 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
         for index in list(range(num_coreset)):
             (input, target) = combined_train_dataset[index]
             input = input.cuda(non_blocking=True)
+            input = input.unsqueeze(0)
             # index = index.cuda(non_blocking=True)
             output, features = model(input)
             softmax_output = F.sigmoid(output)
