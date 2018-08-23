@@ -708,7 +708,7 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
         model.train()
         batch_indices = list(torch.utils.data.sampler.BatchSampler(torch.utils.data.sampler.RandomSampler(range(total_num)), batch_size=batch_size, drop_last=False))
         for batch in batch_indices:
-            loss = torch.Tensor(0.0).cuda()
+            loss = torch.Tensor([0.0]).cuda()
             for index in batch:
                 (input, target) = combined_train_dataset[index]
                 target = target.cuda(non_blocking=True)
