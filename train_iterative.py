@@ -84,7 +84,7 @@ def main():
     # optimizer_method = 'rmsprop'
 
     # batch_size = 16
-    batch_size = 16
+    batch_size = 10
     start_epoch = 0
     # epochs = 70
     epochs = 10
@@ -747,7 +747,6 @@ def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None
         output, features = model(input)
         loss = criterion(output, target)
 
-        print (output.data.cpu().numpy())
 
         # # if using elastic weight consolidation, modify loss
         # if ewc != None:
