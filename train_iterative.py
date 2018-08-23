@@ -682,7 +682,8 @@ def main():
 
 def train_distillation(train_loader, coreset, model, criterion, optimizer, batch_size, workers, num_classes):
 
-    total_loss = None
+    total_loss = torch.Tensor([0.0])
+    total_loss = total_loss.cuda(non_blocking=True)
 
     # distillation loss if not first iteration
     if coreset != None:
@@ -725,10 +726,12 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
 
         loss = criterion(output, target)
 
-        if total_loss != None:
-            total_loss += loss
-        else:
-            total_loss = loss
+        # if total_loss != None:
+        #     total_loss += loss
+        # else:
+        #     total_loss = loss
+
+        total_loss += loss
 
         print (total_loss)
 
