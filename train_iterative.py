@@ -687,28 +687,28 @@ def train_distillation(train_loader, coreset, model, criterion, optimizer, batch
     loss = 0.0
 
 
-    # distillation loss if not first iteration
-    if coreset != None:
-        coreset_loader = torch.utils.data.DataLoader(
-            coreset, batch_size=1, shuffle=False,
-            num_workers=workers, pin_memory=True)
+    # # distillation loss if not first iteration
+    # if coreset != None:
+    #     coreset_loader = torch.utils.data.DataLoader(
+    #         coreset, batch_size=1, shuffle=False,
+    #         num_workers=workers, pin_memory=True)
 
-        # Store network outputs with pre-update parameters
-        old_output = torch.zeros(len(coreset), num_classes).cuda()
-        for index, input, target in coreset_loader:
-            input = Variable(input).cuda()
-            index = index.cuda()
-            output, features = model(input)
-            g = F.sigmoid(output)
-            old_output[index] = g.data
-        old_output = Variable(old_output).cuda()
+    #     # Store network outputs with pre-update parameters
+    #     old_output = torch.zeros(len(coreset), num_classes).cuda()
+    #     for index, input, target in coreset_loader:
+    #         input = Variable(input).cuda()
+    #         index = index.cuda()
+    #         output, features = model(input)
+    #         g = F.sigmoid(output)
+    #         old_output[index] = g.data
+    #     old_output = Variable(old_output).cuda()
 
-        # distillation loss for exemplars
-        for index, input, target in enumerate(coreset_loader):
-            # compute output
-            output, features = model(input)
+    #     # distillation loss for exemplars
+    #     for index, input, target in enumerate(coreset_loader):
+    #         # compute output
+    #         output, features = model(input)
 
-            loss += torch.nn.BCELoss(F.sigmoid(output), old_output[index])
+    #         loss += torch.nn.BCELoss(F.sigmoid(output), old_output[index])
 
 
     # cross entropy loss over new train data
