@@ -704,7 +704,7 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
             input = input.unsqueeze(0)
             # index = index.cuda(non_blocking=True)
             output, features = model(input)
-            softmax_output = F.sigmoid(output)
+            softmax_output = torch.nn.functional.sigmoid(output)
             old_output[index] = softmax_output.data
         old_output = old_output.cuda(non_blocking=True)
 
