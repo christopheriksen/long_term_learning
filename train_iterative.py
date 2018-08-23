@@ -746,6 +746,8 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 #     # print (loss)
 
                 loss += criterion(output, target)
+                
+            print (loss)
 
             # compute gradient and do SGD step
             optimizer.zero_grad()
