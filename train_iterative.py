@@ -732,55 +732,62 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 target = target.cuda(non_blocking=True)
                 output, features = model(input)
 
+                print (i)
+                print (input)
+                print (target)
+
+                print (criterion(output, target))
                 print (batch_criterion(output, target))
 
+                print (input.shape)
 
 
-            print ("single batch")
-            # loss = torch.Tensor([0.0]).cuda(non_blocking=True)
-            first = True
-            batch_loader = torch.utils.data.DataLoader(
-                batch_subset, batch_size=1, shuffle=False,
-                num_workers=workers, pin_memory=True)
-            for i, (input, target) in enumerate(batch_loader):
-                index = batch[i]
-                target = target.cuda(non_blocking=True)
-                output, features = model(input)
 
-                # # new data
-                # if index >= num_coreset:
-                #     # instance_loss = criterion(output, target)
-                #     loss += criterion(output, target)
-                #     # print ("ce")
-                #     # print (loss.shape)
-                #     # print (loss)
+            # print ("single batch")
+            # # loss = torch.Tensor([0.0]).cuda(non_blocking=True)
+            # first = True
+            # batch_loader = torch.utils.data.DataLoader(
+            #     batch_subset, batch_size=1, shuffle=False,
+            #     num_workers=workers, pin_memory=True)
+            # for i, (input, target) in enumerate(batch_loader):
+            #     index = batch[i]
+            #     target = target.cuda(non_blocking=True)
+            #     output, features = model(input)
 
-                # # distillation loss for coreset
-                # else:
-                #     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-                #     new_output = torch.nn.functional.sigmoid(output).data
-                #     new_output = new_output.cuda(non_blocking=True).squeeze()
-                #     loss = distillation_criteron(new_output, old_output[index])
-                #     # print ("bce")
-                #     # print (loss.shape)
-                #     # print (loss)
+            #     # # new data
+            #     # if index >= num_coreset:
+            #     #     # instance_loss = criterion(output, target)
+            #     #     loss += criterion(output, target)
+            #     #     # print ("ce")
+            #     #     # print (loss.shape)
+            #     #     # print (loss)
 
-                if first:
-                    loss  = criterion(output, target)
-                else:
-                    loss  += criterion(output, target)
+            #     # # distillation loss for coreset
+            #     # else:
+            #     #     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
+            #     #     new_output = torch.nn.functional.sigmoid(output).data
+            #     #     new_output = new_output.cuda(non_blocking=True).squeeze()
+            #     #     loss = distillation_criteron(new_output, old_output[index])
+            #     #     # print ("bce")
+            #     #     # print (loss.shape)
+            #     #     # print (loss)
 
-                first = False
+            #     if first:
+            #         loss  = criterion(output, target)
+            #     else:
+            #         loss  += criterion(output, target)
 
-            print (loss)
-            loss = loss/len(batch)
-            print (loss)
-            print ()
+            #     first = False
 
-            # compute gradient and do SGD step
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            # print (loss)
+            # loss = loss/len(batch)
+            # print (loss)
+            # print ()
+
+            # # compute gradient and do SGD step
+            # optimizer.zero_grad()
+            # loss.backward()
+            # optimizer.step()
 
 
     else:
