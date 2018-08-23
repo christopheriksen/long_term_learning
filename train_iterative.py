@@ -743,8 +743,8 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
 
                 summed_loss = torch.Tensor([0.0]).cuda(non_blocking=True)
                 for index in range(input.shape[0]):
-                    output, features = model(input[index])
-                    loss_by_instance = criterion(output, target[index])
+                    output, features = model(input[index].unsqueeze(0))
+                    loss_by_instance = criterion(output, target[index].unsqueeze(0))
                     print (loss_by_instance)
                     summed_loss += loss_by_instance
                 print (summed_loss)
