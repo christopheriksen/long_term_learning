@@ -685,16 +685,22 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
     if coreset != None:
         num_new_data = len(train_dataset)
         num_coreset = len(coreset)
+        total_num = num_new_data + num_coreset
         combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, coreset])
     else:
+        total_num = len(train_dataset)
         combined_train_dataset = train_dataset
 
     combined_train_loader = torch.utils.data.DataLoader(
         combined_train_dataset, batch_size=batch_size, shuffle=True,
         num_workers=workers, pin_memory=True)
 
-    for batch in combined_train_loader:
-        print (batch)
+    print (torch.utils.data.BatchSampler(torch.utils.data.RandomSampler(range(total_num)), batch_size=batch_size, drop_last=False))
+
+    print(torch.utils.data.SubsetRandomSampler(list(range(total_num)), batch_size=batch_size, drop_last=False))
+
+    # for batch in combined_train_loader:
+    #     print (batch)
 
     # for indices, (inputs, targets) in enumerate(combined_train_loader):
     #     print (indices)
