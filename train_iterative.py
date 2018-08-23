@@ -683,6 +683,19 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
     loss = 0.0
 
 
+    # cross entropy loss over new train data
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=batch_size, shuffle=True,
+        num_workers=workers, pin_memory=True)
+    for i, (input, target) in enumerate(train_loader):
+        target = target.cuda(non_blocking=True)
+
+        # compute output
+        output, features = model(input)
+
+        loss += criterion(output, target)
+
+
     # distillation loss if not first iteration
     if coreset != None:
         coreset_loader = torch.utils.data.DataLoader(
@@ -705,19 +718,6 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
             output, features = model(input)
 
             loss += torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-
-
-    # cross entropy loss over new train data
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=batch_size, shuffle=True,
-        num_workers=workers, pin_memory=True)
-    for i, (input, target) in enumerate(train_loader):
-        target = target.cuda(non_blocking=True)
-
-        # compute output
-        output, features = model(input)
-
-        loss += criterion(output, target)
 
 
     # compute gradient and do SGD step
