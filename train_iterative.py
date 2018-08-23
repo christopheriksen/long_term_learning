@@ -697,8 +697,8 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
         old_output = torch.zeros(num_coreset, num_classes).cuda()
         for index in list(range(num_coreset)):
             (input, target) = combined_train_dataset[index]
-            input = Variable(input).cuda()
-            index = index.cuda()
+            input = input.cuda(non_blocking=True)
+            # index = index.cuda(non_blocking=True)
             output, features = model(input)
             softmax_output = F.sigmoid(output)
             old_output[index] = softmax_output.data
@@ -726,7 +726,7 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        
+
 
     else:
         train_loader = torch.utils.data.DataLoader(
