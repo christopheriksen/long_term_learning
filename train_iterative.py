@@ -715,6 +715,7 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
                 input = input.cuda(non_blocking=True)
                 input = input.unsqueeze(0)
                 target = torch.Tensor(target).cuda(non_blocking=True)
+                target = target.unsqueeze(0)
                 # target = target.cuda(non_blocking=True)
                 output, features = model(input)
 
