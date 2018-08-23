@@ -84,7 +84,7 @@ def main():
     # optimizer_method = 'rmsprop'
 
     # batch_size = 16
-    batch_size = 256
+    batch_size = 32
     start_epoch = 0
     # epochs = 70
     epochs = 10
@@ -111,11 +111,11 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = 'mean_approx'
+    selection_method = 'random'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_256_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -124,7 +124,7 @@ def main():
     subset_instance_order_file = 'cifar100_instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_256_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -590,7 +590,10 @@ def main():
                 for exemplar_index in exemplar_indices_by_class[class_index]:
                     exemplar_indices.append(exemplar_index)
 
+            print ("Num exemplar indices: " + str(len(exemplar_indices)))
+
             exemplar_dataset = torch.utils.data.dataset.Subset(combined_train_dataset, exemplar_indices)
+            print ("Num exemplar dataset: " + str(len(exemplar_dataset)))
 
 
 
