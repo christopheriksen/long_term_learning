@@ -688,7 +688,7 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
     # switch to train mode
     model.train()
 
-    batch_criterion = nn.CrossEntropyLoss(weight=None, size_average=None, reduction='sum').cuda()
+    batch_criterion = nn.CrossEntropyLoss(weight=None, size_average=None).cuda()
 
     if coreset != None:
         num_new_data = len(train_dataset)
