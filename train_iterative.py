@@ -539,7 +539,7 @@ def main():
 
             if selection_method == 'random':
                 for class_index in range(num_classes):
-                    indices_by_class[class_index] = np.random.shuffle(indices_by_class[class_index])
+                    np.random.shuffle(indices_by_class[class_index])
                     exemplar_indices_by_class[class_index] = indices_by_class[class_index][:num_exemplars_per_class]
 
 
