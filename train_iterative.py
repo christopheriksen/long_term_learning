@@ -412,23 +412,23 @@ def main():
 
         if subset_iter == 0:
             cum_train_dataset = train_dataset       # cum dataset for test metrics
-            # combined_train_dataset = train_dataset
+            combined_train_dataset = train_dataset
         else:
             cum_train_dataset = torch.utils.data.dataset.ConcatDataset([cum_train_dataset, train_dataset])      # cum dataset for test metrics
 
-            # if selection_method != None:
-            #     # add stored exemplars to training set
-            #     combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
-            # else:
-            #     combined_train_dataset = train_dataset
+            if selection_method != None:
+                # add stored exemplars to training set
+                combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
+            else:
+                combined_train_dataset = train_dataset
 
         cum_train_loader = torch.utils.data.DataLoader(
             cum_train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
-        # train_loader = torch.utils.data.DataLoader(
-        #     combined_train_dataset, batch_size=batch_size, shuffle=True,
-        #     num_workers=workers, pin_memory=True)
+        train_loader = torch.utils.data.DataLoader(
+            combined_train_dataset, batch_size=batch_size, shuffle=True,
+            num_workers=workers, pin_memory=True)
 
 
 
@@ -445,9 +445,9 @@ def main():
             # adjust_learning_rate(optimizer, epoch, lr)
 
             # train for one epoch
-            # train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
+            train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
-            train_distillation(train_dataset, exemplar_dataset, model, criterion, optimizer, batch_size, workers)
+            # train_distillation(train_dataset, exemplar_dataset, model, criterion, optimizer, batch_size, workers)
 
             # # evaluate on validation set
             # prec1 = validate(val_loader, model, criterion, print_freq)
@@ -495,11 +495,11 @@ def main():
         ## Exemplars 
         if selection_method != None:  
 
-            if subset_iter != 0:
-                # add stored exemplars to training set
-                combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
-            else:
-                combined_train_dataset = train_dataset
+            # if subset_iter != 0:
+            #     # add stored exemplars to training set
+            #     combined_train_dataset = torch.utils.data.dataset.ConcatDataset([train_dataset, exemplar_dataset])
+            # else:
+            #     combined_train_dataset = train_dataset
 
             exemplar_pool_loader = torch.utils.data.DataLoader(
                 combined_train_dataset, batch_size=1, shuffle=False,
