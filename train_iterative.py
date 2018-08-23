@@ -714,7 +714,7 @@ def train_distillation(train_dataset, coreset, model, criterion, optimizer, batc
                 (input, target) = combined_train_dataset[index]
                 input = input.cuda(non_blocking=True)
                 input = input.unsqueeze(0)
-                # target = target.cuda(non_blocking=True)
+                target = target.cuda(non_blocking=True)
                 output, features = model(input)
 
                 # new data
