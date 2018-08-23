@@ -728,15 +728,11 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 if index >= num_coreset:
                     # instance_loss = criterion(output, target)
                     loss += criterion(output, target)
-                    print ("ce")
-                    print(loss)
 
                 # distillation loss for coreset
                 else:
                     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
                     loss += distillation_criteron(torch.nn.functional.sigmoid(output).data, old_output[index])
-                    print ("bce")
-                    print (loss)
 
             # compute gradient and do SGD step
             optimizer.zero_grad()
