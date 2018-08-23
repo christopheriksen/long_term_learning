@@ -735,7 +735,8 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
 
 
             print ("single batch")
-            loss = torch.Tensor([0.0]).cuda(non_blocking=True)
+            # loss = torch.Tensor([0.0]).cuda(non_blocking=True)
+            first = True
             batch_loader = torch.utils.data.DataLoader(
                 batch_subset, batch_size=1, shuffle=False,
                 num_workers=workers, pin_memory=True)
@@ -762,7 +763,20 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 #     # print (loss.shape)
                 #     # print (loss)
 
-                loss += (criterion(output, target)/float(len(batch)))
+                if first:
+                    instance_loss  = criterion(output, target)
+                    print (instance_loss)
+                    instance_loss = instance_loss/len(batch)
+                    print (instance_loss)
+                    loss  = instance_loss
+                else:
+                    instance_loss  = criterion(output, target)
+                    print (instance_loss)
+                    instance_loss = instance_loss/len(batch)
+                    print (instance_loss)
+                    loss  += instance_loss
+
+                first = False
 
             print (loss)
             # loss = loss/float(len(batch))
