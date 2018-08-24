@@ -407,8 +407,8 @@ def main():
 
 
     if use_ewc:
-    fisher = {}
-    optpar = {}
+        fisher = {}
+        optpar = {}
 
 
     for subset_iter in range(num_subsets):
