@@ -717,7 +717,6 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
             train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
-        loss = torch.autograd.Variable(loss, requires_grad = True)
         for i, (input, target) in enumerate(train_loader):
             target = target.cuda(non_blocking=True)
             output, features = model(input)
