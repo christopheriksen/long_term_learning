@@ -504,10 +504,11 @@ def main():
             #     'optimizer' : optimizer.state_dict(),
             # }, is_best, weights_dir + ckpt_save_name, weights_dir + best_ckpt_save_name)
 
-            print ("Epoch time: " + str(time.time() - start_time))
+            # print ("Epoch time: " + str(time.time() - start_time))
 
-
-        validate(val_loader, model, criterion, print_freq)
+            if (epoch%10) == 0:
+                print ("Epoch time: " + str(time.time() - start_time))
+                validate(val_loader, model, criterion, print_freq)
 
         # best_checkpoint = torch.load(weights_dir + best_ckpt_save_name)
         # model.load_state_dict(best_checkpoint['state_dict'])
