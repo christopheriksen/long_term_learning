@@ -86,7 +86,7 @@ def main():
     batch_size = 32
     start_epoch = 0
     # epochs = 70
-    epochs = 100
+    epochs = 10
     print_freq = 10
     workers = 8
     cudnn_benchmark = True
@@ -114,7 +114,7 @@ def main():
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e100_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -123,7 +123,7 @@ def main():
     subset_instance_order_file = 'cifar100_instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e100_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -712,7 +712,7 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
         num_train_data = len(train_dataset)
         num_coreset_data = len(coreset)
         num_data = num_train_data + num_coreset_data
-        loss = torch.Tensor([0.0]).cuda(non_blocking=True)
+        # loss = torch.Tensor([0.0]).cuda(non_blocking=True)
 
         # new train data
         train_loader = torch.utils.data.DataLoader(
@@ -723,9 +723,13 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
         for i, (input, target) in enumerate(train_loader):
             target = target.cuda(non_blocking=True)
             output, features = model(input)
-            loss += (batch_criterion(output, target)/num_data)
+            # loss += (batch_criterion(output, target)/num_data)
+            loss = criterion(output, target)
 
-
+            # compute gradient and do SGD step
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
 
         # coreset data
@@ -737,23 +741,26 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
             target = target.cuda(non_blocking=True)
             output, features = model(input)
 
-
-
             new_output = torch.nn.functional.sigmoid(output).data
             new_output = new_output.cuda(non_blocking=True).squeeze()
 
+            # loss += (batch_distillation_criterion(new_output, old_output[i])/num_data).data
+            loss = distillation_criterion(new_output, old_output[i])
 
-            loss += (batch_distillation_criterion(new_output, old_output[i])/num_data).data
+            # compute gradient and do SGD step
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
-        # compute gradient and do SGD step
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        # # compute gradient and do SGD step
+        # optimizer.zero_grad()
+        # loss.backward()
+        # optimizer.step()
 
 
     else:
         num_train_data = len(train_dataset)
-        loss = torch.Tensor([0.0]).cuda(non_blocking=True)
+        # loss = torch.Tensor([0.0]).cuda(non_blocking=True)
 
         train_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=batch_size, shuffle=True,
@@ -762,13 +769,19 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
         for i, (input, target) in enumerate(train_loader):
             target = target.cuda(non_blocking=True)
             output, features = model(input)
-            loss += (batch_criterion(output, target)/num_train_data).data
+            # loss += (batch_criterion(output, target)/num_train_data).data
+            loss = criterion(output, target)/num_train_data
 
-        loss = torch.autograd.Variable(loss, requires_grad = True)
-        # compute gradient and do SGD step
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+            # compute gradient and do SGD step
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+        # loss = torch.autograd.Variable(loss, requires_grad = True)
+        # # compute gradient and do SGD step
+        # optimizer.zero_grad()
+        # loss.backward()
+        # optimizer.step()
 
 
 # def train_distillation(train_dataset, coreset, model, criterion, distillation_criteron, optimizer, batch_size, workers, num_classes):
