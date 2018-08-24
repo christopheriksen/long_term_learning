@@ -117,11 +117,11 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = 'kmedoids'
+    selection_method = 'random'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_kmedoids_norm_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_random_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -131,7 +131,7 @@ def main():
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_kmedoids_norm_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_random_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -477,12 +477,17 @@ def main():
 
             # adjust_learning_rate(optimizer, epoch, lr)
 
-            # train for one epoch
-            if distillation != True:
-                train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
-            else:
+
+            if distillation == True:
                 train_distillation(train_dataset, exemplar_dataset, old_output, model, criterion, distillation_criterion, optimizer, batch_size, workers, num_classes)
+
+            if use_ewc == True:
+                train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq)
+
+            # train for one epoch
+            if (distillation != True) and (use_ewc != True)
+                train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
             # # evaluate on validation set
             # prec1 = validate(val_loader, model, criterion, print_freq)
@@ -889,6 +894,72 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
 #             optimizer.zero_grad()
 #             loss.backward()
 #             optimizer.step()
+
+
+def train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, ewc):
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    top5 = AverageMeter()
+
+    # switch to train mode
+    model.train()
+
+    end = time.time()
+    for i, (input, target) in enumerate(train_loader):
+        # measure data loading time
+        data_time.update(time.time() - end)
+
+        target = target.cuda(non_blocking=True)
+
+        # compute output
+        output, features = model(input)
+        loss = criterion(output, target)
+
+        # ewc regularization
+        for dataset in range(num_datasets_seen):
+            for i, p in enumerate(self.net.parameters()):
+                l = ewc.reg * Variable(ewc.fisher[dataset][i])
+                l = l * (p - Variable(ewc.optpar[dataset][i])).pow(2)
+                loss += l.sum()
+
+
+        # # if using elastic weight consolidation, modify loss
+        # if ewc != None:
+        #     if ewc.mode == 'class':
+        #         for class_index in range(ewc.num_classes):
+        #             # loss += (ewc.importance/ewc.num_classes) * ewc.F[class_index]     # FIXME
+        #     if ewc.mode == 'dataset':
+        #         for dataset_index in range(ewc.num_datasets):
+        #             # loss += (ewc.discount^dataset_index)(ewc.importance/ewc.num_datasets) * ewc.F[dataset_index]      # FIXME
+        #     if ewc.mode == 'consolidated':
+        #         # loss += ewc.importance * ewc.F      # FIXME
+
+        # measure accuracy and record loss
+        prec1, prec5 = accuracy(output, target, topk=(1, 5))
+        losses.update(loss.item(), input.size(0))
+        top1.update(prec1[0], input.size(0))
+        top5.update(prec5[0], input.size(0))
+
+        # compute gradient and do SGD step
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # measure elapsed time
+        batch_time.update(time.time() - end)
+        end = time.time()
+
+        if i % print_freq == 0:
+            print('Epoch: [{0}][{1}/{2}]\t'
+                  'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                  'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
+                  'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                  'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
+                  'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
+                   epoch, i, len(train_loader), batch_time=batch_time,
+                   data_time=data_time, loss=losses, top1=top1, top5=top5))
 
 
 def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None):
