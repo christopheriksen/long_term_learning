@@ -486,7 +486,7 @@ def main():
                 train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq)
 
             # train for one epoch
-            if (distillation != True) and (use_ewc != True)
+            if (distillation != True) and (use_ewc != True):
                 train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
             # # evaluate on validation set
