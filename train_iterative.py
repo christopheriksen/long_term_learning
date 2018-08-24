@@ -20,6 +20,7 @@ import random
 import utils
 import models
 import math
+from sklearn.metrics.pairwise import pairwise_distances
 
 
 def main():
