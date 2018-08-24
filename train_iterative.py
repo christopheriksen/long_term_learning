@@ -436,14 +436,14 @@ def main():
             cum_train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
-        # train_loader = torch.utils.data.DataLoader(
-        #     combined_train_dataset, batch_size=batch_size, shuffle=True,
-        #     num_workers=workers, pin_memory=True)
-
         if distillation != True:
             train_loader = torch.utils.data.DataLoader(
-                train_dataset, batch_size=batch_size, shuffle=True,
+                combined_train_dataset, batch_size=batch_size, shuffle=True,
                 num_workers=workers, pin_memory=True)
+
+        # train_loader = torch.utils.data.DataLoader(
+        #     train_dataset, batch_size=batch_size, shuffle=True,
+        #     num_workers=workers, pin_memory=True)
 
 
         if distillation:
