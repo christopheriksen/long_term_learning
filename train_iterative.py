@@ -446,7 +446,7 @@ def main():
 
             # old_output = torch.zeros(len(exemplar_dataset), num_classes).cuda()
             old_output = []
-            for i, (input, target) in enumerate(coreset_loader):
+            for i, (input, target) in enumerate(exemplar_dataset_loader):
                 target = target.cuda(non_blocking=True)
                 output, features = model(input)
                 softmax_output = torch.nn.functional.sigmoid(output)
