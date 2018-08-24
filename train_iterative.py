@@ -760,7 +760,7 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
         for i, (input, target) in enumerate(train_loader):
             target = target.cuda(non_blocking=True)
             output, features = model(input)
-            # loss += (batch_criterion(output, target)/num_train_data)
+            loss += (batch_criterion(output, target)/num_train_data)
 
         # # compute gradient and do SGD step
         # optimizer.zero_grad()
