@@ -741,7 +741,7 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
             new_output = new_output.cuda(non_blocking=True).squeeze()
 
 
-            loss += (batch_distillation_criterion(new_output, old_output[i])/num_data)
+            loss += (batch_distillation_criterion(new_output, old_output[i])/num_data).data
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
@@ -761,13 +761,11 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
             target = target.cuda(non_blocking=True)
             output, features = model(input)
             loss += (batch_criterion(output, target)/num_train_data).data
-            # # loss += (criterion(output, target)/num_train_data)
-            print (loss)
 
-        # # compute gradient and do SGD step
-        # optimizer.zero_grad()
-        # loss.backward()
-        # optimizer.step()
+        # compute gradient and do SGD step
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
 
 # def train_distillation(train_dataset, coreset, model, criterion, distillation_criteron, optimizer, batch_size, workers, num_classes):
