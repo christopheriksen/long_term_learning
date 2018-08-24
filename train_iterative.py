@@ -928,8 +928,8 @@ def train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, fish
         # ewc regularization
         for dataset in range(num_datasets_seen):
             for i, p in enumerate(model.parameters()):
-                l = ewc_lambda * Variable(fisher[dataset][i])
-                l = l * (p - Variable(optpar[dataset][i])).pow(2)
+                l = ewc_lambda * torch.autograd.Variable(fisher[dataset][i])
+                l = l * (p - torch.autograd.Variable(optpar[dataset][i])).pow(2)
                 loss += l.sum()
 
 
