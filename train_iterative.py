@@ -699,7 +699,7 @@ def main():
     f.write('\n')
 
 
-def train_distillation(train_dataset, coreset, old_output, model, criterion, distillation_criteron, optimizer, batch_size, workers, num_classes):
+def train_distillation(train_dataset, coreset, old_output, model, criterion, distillation_criterion, optimizer, batch_size, workers, num_classes):
 
     # switch to train mode
     model.train()
