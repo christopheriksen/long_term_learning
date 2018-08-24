@@ -738,8 +738,8 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
             target = target.cuda(non_blocking=True)
             output, features = model(input)
 
-            new_output = torch.nn.functional.sigmoid(output).data
-            new_output = new_output.cuda(non_blocking=True).squeeze()
+            new_output = torch.nn.functional.sigmoid(output)
+            # new_output = new_output.cuda(non_blocking=True).squeeze()
 
             # loss += (batch_distillation_criterion(new_output, old_output[i])/num_data).data
             loss = distillation_criterion(new_output, old_output[i])
