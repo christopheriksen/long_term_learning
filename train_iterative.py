@@ -775,11 +775,6 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
             loss.backward()
             optimizer.step()
 
-            # compute gradient and do SGD step
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
 
 
         if distillation_merged != True:
