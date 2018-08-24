@@ -367,10 +367,10 @@ def main():
 
 
         if load_order:
-            train_datasets_by_subset, test_dataset = utils.load_instance_subsets_from_order_file(orderings_dir+subset_instance_order_file, orderings_dir+test_instances_file, data_dir, normalization_params)
+            train_datasets_by_subset, test_dataset = utils.load_instance_subsets_from_order_file(orderings_dir+subset_instance_order_file, orderings_dir+test_instances_file, data_dir, img_size, normalization_params)
 
         else:
-            train_datasets_by_subset, test_dataset, train_instance_names_by_subset, test_instance_names = utils.load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, normalization_params)
+            train_datasets_by_subset, test_dataset, train_instance_names_by_subset, test_instance_names = utils.load_rgbd_instance_subsets_leave_one_out(instances_per_subset, data_dir, img_size, normalization_params)
 
             # write instance ordering
             f = open(orderings_dir + subset_instance_order_file, "w")
