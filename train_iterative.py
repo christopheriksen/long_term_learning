@@ -732,6 +732,8 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
                 target = target.cuda(non_blocking=True)
                 output, features = model(input)
 
+                loss = criterion(output, target)
+
                 # print (i)
                 # print (input)
                 # print (target)
