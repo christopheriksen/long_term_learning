@@ -638,7 +638,7 @@ def main():
         if use_ewc:
             fisher[subset_iter] = []
             optpar[subset_iter] = []
-            for p in model.net.parameters():
+            for p in model.parameters():
                 pd = p.data.clone()
                 pg = p.grad.data.clone().pow(2)
                 optpar[subset_iter].append(pd)
@@ -927,7 +927,7 @@ def train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, fish
 
         # ewc regularization
         for dataset in range(num_datasets_seen):
-            for i, p in enumerate(model.net.parameters()):
+            for i, p in enumerate(model.parameters()):
                 l = ewc_lambda * Variable(fisher[dataset][i])
                 l = l * (p - Variable(optpar[dataset][i])).pow(2)
                 loss += l.sum()
