@@ -237,14 +237,6 @@ def main():
                                     centered=False)
 
 
-    ## EWC
-    if use_ewc:
-        ewc = EWC(ewc_mode, ewc_lambda, num_classes)
-    else:
-        ewc = None
-
-
-
     ## Data loading code
     if dataset == 'cifar100':
 
