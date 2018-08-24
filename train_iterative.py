@@ -89,7 +89,7 @@ def main():
     # RMSprop
     # optimizer_method = 'rmsprop'
 
-    batch_size = 16
+    batch_size = 32
     start_epoch = 0
     # epochs = 70
     epochs = 10
@@ -104,7 +104,7 @@ def main():
     freeze_weights = False
 
     distillation = True
-    distillation_merged = True
+    distillation_merged = False
     use_ewc = False
     # ewc_mode = 'class'
     # ewc_mode = 'dataset'
@@ -114,15 +114,15 @@ def main():
     num_subsets = 10
     instances_per_subset = 10
     # dictionary_size = 2550
-    dictionary_size = 1000
+    dictionary_size = 5000
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = 'kmedoids'
+    selection_method = 'mean_approx'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_kmedoids_norm_distil_merged_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_16_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_1_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
@@ -133,7 +133,7 @@ def main():
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_kmedoids_norm_distil_merged_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_16_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -603,7 +603,10 @@ def main():
 
                     if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
 
+                        print (features_by_class[class_index]).shape
                         features_by_class[class_index] = features_by_class[class_index].T
+                        print(features_by_class[class_index]).shape
+                        print ()
                                       
                         # Herding procedure : ranking of the potential exemplars
                         mu  = np.mean(features_by_class[class_index],axis=1)
