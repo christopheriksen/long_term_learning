@@ -690,130 +690,130 @@ def train_distillation(train_dataset, coreset, model, criterion, distillation_cr
 
     batch_criterion = nn.CrossEntropyLoss(weight=None, size_average=False).cuda()
 
-    if coreset != None:
-        num_new_data = len(train_dataset)
-        num_coreset = len(coreset)
-        total_num = num_new_data + num_coreset
-        combined_train_dataset = torch.utils.data.dataset.ConcatDataset([coreset, train_dataset])
+    # if coreset != None:
+    #     num_new_data = len(train_dataset)
+    #     num_coreset = len(coreset)
+    #     total_num = num_new_data + num_coreset
+    #     combined_train_dataset = torch.utils.data.dataset.ConcatDataset([coreset, train_dataset])
 
-        # combined_train_loader = torch.utils.data.DataLoader(
-        #     combined_train_dataset, batch_size=batch_size, shuffle=True,
-        #     num_workers=workers, pin_memory=True)
+    #     # combined_train_loader = torch.utils.data.DataLoader(
+    #     #     combined_train_dataset, batch_size=batch_size, shuffle=True,
+    #     #     num_workers=workers, pin_memory=True)
 
-        # precompute values for coreset
-        # model.eval()
-        old_output = torch.zeros(num_coreset, num_classes).cuda()
-        for index in list(range(num_coreset)):
-            (input, target) = combined_train_dataset[index]
-            input = input.cuda(non_blocking=True)
-            input = input.unsqueeze(0)
-            # index = index.cuda(non_blocking=True)
-            output, features = model(input)
-            softmax_output = torch.nn.functional.sigmoid(output)
-            old_output[index] = softmax_output.data
-        old_output = old_output.cuda(non_blocking=True)
+    #     # precompute values for coreset
+    #     # model.eval()
+    #     old_output = torch.zeros(num_coreset, num_classes).cuda()
+    #     for index in list(range(num_coreset)):
+    #         (input, target) = combined_train_dataset[index]
+    #         input = input.cuda(non_blocking=True)
+    #         input = input.unsqueeze(0)
+    #         # index = index.cuda(non_blocking=True)
+    #         output, features = model(input)
+    #         softmax_output = torch.nn.functional.sigmoid(output)
+    #         old_output[index] = softmax_output.data
+    #     old_output = old_output.cuda(non_blocking=True)
 
-        # iterate over data
-        # model.train()
-        batch_indices = list(torch.utils.data.sampler.BatchSampler(torch.utils.data.sampler.RandomSampler(range(total_num)), batch_size=batch_size, drop_last=False))
-        for batch in batch_indices:
+    #     # iterate over data
+    #     # model.train()
+    #     batch_indices = list(torch.utils.data.sampler.BatchSampler(torch.utils.data.sampler.RandomSampler(range(total_num)), batch_size=batch_size, drop_last=False))
+    #     for batch in batch_indices:
 
-            # first = True
-            # loss = torch.Tensor([0.0]).cuda(non_blocking=True)
-            batch_subset = torch.utils.data.dataset.Subset(combined_train_dataset, batch)
-
-
-            # print ("full batch")
-            full_batch_loader = torch.utils.data.DataLoader(
-                batch_subset, batch_size=1, shuffle=False,
-                num_workers=workers, pin_memory=True)
-            for i, (input, target) in enumerate(full_batch_loader):
-                # index = batch[i]
-                target = target.cuda(non_blocking=True)
-                output, features = model(input)
-
-                loss = criterion(output, target)
-
-                # print (i)
-                # print (input)
-                # print (target)
-
-                # print (criterion(output, target))
-                # print (batch_criterion(output, target))
-
-                # print (input.shape)
-
-                # summed_loss = torch.Tensor([0.0]).cuda(non_blocking=True)
-                # for index in range(input.shape[0]):
-                #     output, features = model(input[index].unsqueeze(0))
-                #     loss_by_instance = batch_criterion(output, target[index].unsqueeze(0))
-                #     print (loss_by_instance)
-                #     summed_loss += loss_by_instance
-                # print (summed_loss)
+    #         # first = True
+    #         # loss = torch.Tensor([0.0]).cuda(non_blocking=True)
+    #         batch_subset = torch.utils.data.dataset.Subset(combined_train_dataset, batch)
 
 
+    #         # print ("full batch")
+    #         full_batch_loader = torch.utils.data.DataLoader(
+    #             batch_subset, batch_size=1, shuffle=False,
+    #             num_workers=workers, pin_memory=True)
+    #         for i, (input, target) in enumerate(full_batch_loader):
+    #             # index = batch[i]
+    #             target = target.cuda(non_blocking=True)
+    #             output, features = model(input)
 
-            # print ("single batch")
-            # # loss = torch.Tensor([0.0]).cuda(non_blocking=True)
-            # first = True
-            # batch_loader = torch.utils.data.DataLoader(
-            #     batch_subset, batch_size=1, shuffle=False,
-            #     num_workers=workers, pin_memory=True)
-            # for i, (input, target) in enumerate(batch_loader):
-            #     index = batch[i]
-            #     target = target.cuda(non_blocking=True)
-            #     output, features = model(input)
+    #             loss = criterion(output, target)
 
-            #     # # new data
-            #     # if index >= num_coreset:
-            #     #     # instance_loss = criterion(output, target)
-            #     #     loss += criterion(output, target)
-            #     #     # print ("ce")
-            #     #     # print (loss.shape)
-            #     #     # print (loss)
+    #             # print (i)
+    #             # print (input)
+    #             # print (target)
 
-            #     # # distillation loss for coreset
-            #     # else:
-            #     #     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
-            #     #     new_output = torch.nn.functional.sigmoid(output).data
-            #     #     new_output = new_output.cuda(non_blocking=True).squeeze()
-            #     #     loss = distillation_criteron(new_output, old_output[index])
-            #     #     # print ("bce")
-            #     #     # print (loss.shape)
-            #     #     # print (loss)
+    #             # print (criterion(output, target))
+    #             # print (batch_criterion(output, target))
 
-            #     if first:
-            #         loss  = criterion(output, target)
-            #     else:
-            #         loss  += criterion(output, target)
+    #             # print (input.shape)
 
-            #     first = False
-
-            # print (loss)
-            # loss = loss/len(batch)
-            # print (loss)
-            # print ()
-
-                # compute gradient and do SGD step
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+    #             # summed_loss = torch.Tensor([0.0]).cuda(non_blocking=True)
+    #             # for index in range(input.shape[0]):
+    #             #     output, features = model(input[index].unsqueeze(0))
+    #             #     loss_by_instance = batch_criterion(output, target[index].unsqueeze(0))
+    #             #     print (loss_by_instance)
+    #             #     summed_loss += loss_by_instance
+    #             # print (summed_loss)
 
 
-    else:
-        train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=batch_size, shuffle=True,
-            num_workers=workers, pin_memory=True)
 
-        for i, (input, target) in enumerate(train_loader):
-            target = target.cuda(non_blocking=True)
-            output, features = model(input)
-            loss = criterion(output, target)
+    #         # print ("single batch")
+    #         # # loss = torch.Tensor([0.0]).cuda(non_blocking=True)
+    #         # first = True
+    #         # batch_loader = torch.utils.data.DataLoader(
+    #         #     batch_subset, batch_size=1, shuffle=False,
+    #         #     num_workers=workers, pin_memory=True)
+    #         # for i, (input, target) in enumerate(batch_loader):
+    #         #     index = batch[i]
+    #         #     target = target.cuda(non_blocking=True)
+    #         #     output, features = model(input)
 
-            # compute gradient and do SGD step
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+    #         #     # # new data
+    #         #     # if index >= num_coreset:
+    #         #     #     # instance_loss = criterion(output, target)
+    #         #     #     loss += criterion(output, target)
+    #         #     #     # print ("ce")
+    #         #     #     # print (loss.shape)
+    #         #     #     # print (loss)
+
+    #         #     # # distillation loss for coreset
+    #         #     # else:
+    #         #     #     # instance_loss = torch.nn.BCELoss(F.sigmoid(output), old_output[index])
+    #         #     #     new_output = torch.nn.functional.sigmoid(output).data
+    #         #     #     new_output = new_output.cuda(non_blocking=True).squeeze()
+    #         #     #     loss = distillation_criteron(new_output, old_output[index])
+    #         #     #     # print ("bce")
+    #         #     #     # print (loss.shape)
+    #         #     #     # print (loss)
+
+    #         #     if first:
+    #         #         loss  = criterion(output, target)
+    #         #     else:
+    #         #         loss  += criterion(output, target)
+
+    #         #     first = False
+
+    #         # print (loss)
+    #         # loss = loss/len(batch)
+    #         # print (loss)
+    #         # print ()
+
+    #             # compute gradient and do SGD step
+    #             optimizer.zero_grad()
+    #             loss.backward()
+    #             optimizer.step()
+
+
+    # else:
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=1, shuffle=True,
+        num_workers=workers, pin_memory=True)
+
+    for i, (input, target) in enumerate(train_loader):
+        target = target.cuda(non_blocking=True)
+        output, features = model(input)
+        loss = criterion(output, target)
+
+        # compute gradient and do SGD step
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
 
 def train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None):
