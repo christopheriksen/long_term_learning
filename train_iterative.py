@@ -83,7 +83,7 @@ def main():
     # RMSprop
     # optimizer_method = 'rmsprop'
 
-    batch_size = 16
+    batch_size = 32
     start_epoch = 0
     # epochs = 70
     epochs = 100
@@ -760,12 +760,12 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
         for i, (input, target) in enumerate(train_loader):
             target = target.cuda(non_blocking=True)
             output, features = model(input)
-            loss += (batch_criterion(output, target)/num_train_data)
+            # loss += (batch_criterion(output, target)/num_train_data)
 
-        # compute gradient and do SGD step
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        # # compute gradient and do SGD step
+        # optimizer.zero_grad()
+        # loss.backward()
+        # optimizer.step()
 
 
 # def train_distillation(train_dataset, coreset, model, criterion, distillation_criteron, optimizer, batch_size, workers, num_classes):
