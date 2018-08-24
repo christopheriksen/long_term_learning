@@ -904,7 +904,7 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
 #             optimizer.step()
 
 
-def train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, fisher, optpar, num_datasets_seen):
+def train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, fisher, optpar, ewc_lambda, num_datasets_seen):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
