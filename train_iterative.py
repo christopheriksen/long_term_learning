@@ -712,7 +712,7 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
         num_coreset_data = len(coreset)
         num_data = num_train_data + num_coreset_data
         loss = torch.Tensor([0.0]).cuda(non_blocking=True)
-        loss = Variable(loss, requires_grad = True)
+        loss = torch.autograd.Variable(loss, requires_grad = True)
 
         # new train data
         train_loader = torch.utils.data.DataLoader(
@@ -753,7 +753,7 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
     else:
         num_train_data = len(train_dataset)
         loss = torch.Tensor([0.0]).cuda(non_blocking=True)
-        loss = Variable(loss, requires_grad = True)
+        loss = torch.autograd.Variable(loss, requires_grad = True)
 
         train_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=batch_size, shuffle=True,
