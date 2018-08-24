@@ -104,11 +104,11 @@ def main():
     freeze_weights = False
 
     distillation = False
-    use_ewc = False
-    ewc_mode = 'class'
+    use_ewc = True
+    # ewc_mode = 'class'
     # ewc_mode = 'dataset'
     # ewc_mode = 'consolidated'
-    ewc_lambda = 1
+    ewc_lambda = 1.0
 
     num_subsets = 10
     instances_per_subset = 10
@@ -117,11 +117,12 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = 'random'
+    selection_method = None
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_random_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
+    # weights_save_name = 'resnet18_imagenet_cifar100_iter_random_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_1_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -131,7 +132,7 @@ def main():
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_random_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_ewc_lambda_1_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -404,6 +405,12 @@ def main():
     first_train_accuracies = []
     test_accuracies = []
 
+
+    if use_ewc:
+    fisher = {}
+    optpar = {}
+
+
     for subset_iter in range(num_subsets):
 
         train_dataset = train_datasets_by_subset[subset_iter]
@@ -446,7 +453,7 @@ def main():
                 num_workers=workers, pin_memory=True)
 
 
-        if distillation == True:
+        if distillation:
             # precompute values for coreset
             old_output = None
             if exemplar_dataset != None:
@@ -465,6 +472,7 @@ def main():
                     old_output.append(softmax_output.data)
                 # old_output = old_output.cuda(non_blocking=True)
 
+
         ## Train
 
         # best_prec1 = validate(val_loader, model, criterion, print_freq)
@@ -479,11 +487,11 @@ def main():
 
 
 
-            if distillation == True:
+            if distillation:
                 train_distillation(train_dataset, exemplar_dataset, old_output, model, criterion, distillation_criterion, optimizer, batch_size, workers, num_classes)
 
-            if use_ewc == True:
-                train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq)
+            if use_ewc:
+                train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, fisher, optpar, ewc_lambda, subset_iter)
 
             # train for one epoch
             if (distillation != True) and (use_ewc != True):
@@ -631,11 +639,19 @@ def main():
             exemplar_dataset = torch.utils.data.dataset.Subset(combined_train_dataset, exemplar_indices)
             # print ("Num exemplar dataset: " + str(len(exemplar_dataset)))
 
+        # only performed on new data (not exemplars)
 
 
         ## EWC
+        if use_ewc:
+            fisher[subset_iter] = []
+            optpar[subset_iter] = []
+            for p in model.net.parameters():
+                pd = p.data.clone()
+                pg = p.grad.data.clone().pow(2)
+                optpar[subset_iter].append(pd)
+                fisher[subset_iter].append(pg)
 
-        # only performed on new data (not exemplars)
 
         # if ewc != None:
         #     if ewc.mode == 'class':
@@ -896,7 +912,7 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
 #             optimizer.step()
 
 
-def train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, ewc):
+def train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, fisher, optpar, num_datasets_seen):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -919,9 +935,9 @@ def train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, ewc)
 
         # ewc regularization
         for dataset in range(num_datasets_seen):
-            for i, p in enumerate(self.net.parameters()):
-                l = ewc.reg * Variable(ewc.fisher[dataset][i])
-                l = l * (p - Variable(ewc.optpar[dataset][i])).pow(2)
+            for i, p in enumerate(model.net.parameters()):
+                l = ewc_lambda * Variable(fisher[dataset][i])
+                l = l * (p - Variable(optpar[dataset][i])).pow(2)
                 loss += l.sum()
 
 
