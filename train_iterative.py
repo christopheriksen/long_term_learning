@@ -103,8 +103,9 @@ def main():
     imagenet_normalization = True
     freeze_weights = False
 
-    distillation = False
-    use_ewc = True
+    distillation = True
+    distillation_merged = True
+    use_ewc = False
     # ewc_mode = 'class'
     # ewc_mode = 'dataset'
     # ewc_mode = 'consolidated'
@@ -117,12 +118,12 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = None
+    selection_method = 'kmedoids'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    # weights_save_name = 'resnet18_imagenet_cifar100_iter_random_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_1_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_kmedoids_norm_distil_merged_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
+    # weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_1_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -132,7 +133,7 @@ def main():
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_ewc_lambda_1_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_kmedoids_norm_distil_merged_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -480,7 +481,7 @@ def main():
 
 
             if distillation:
-                train_distillation(train_dataset, exemplar_dataset, old_output, model, criterion, distillation_criterion, optimizer, batch_size, workers, num_classes)
+                train_distillation(train_dataset, exemplar_dataset, old_output, model, criterion, distillation_criterion, optimizer, batch_size, workers, num_classes, distillation_merged)
 
             if use_ewc:
                 train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, fisher, optpar, ewc_lambda, subset_iter)
@@ -726,7 +727,7 @@ def main():
     f.write('\n')
 
 
-def train_distillation(train_dataset, coreset, old_output, model, criterion, distillation_criterion, optimizer, batch_size, workers, num_classes):
+def train_distillation(train_dataset, coreset, old_output, model, criterion, distillation_criterion, optimizer, batch_size, workers, num_classes, distillation_merged):
 
     # switch to train mode
     model.train()
@@ -744,37 +745,55 @@ def train_distillation(train_dataset, coreset, old_output, model, criterion, dis
             train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=workers, pin_memory=True)
 
+        # coreset data
+        coreset_loader = torch.utils.data.DataLoader(
+            coreset, batch_size=batch_size, shuffle=False,
+            num_workers=workers, pin_memory=True)
+
         for i, (input, target) in enumerate(train_loader):
             target = target.cuda(non_blocking=True)
             output, features = model(input)
             # loss += (batch_criterion(output, target)/num_data)
             loss = criterion(output, target)
 
+            if distillation_merged:
+                for i_c, (input_c, target_c) in enumerate(coreset_loader):
+                    target_c = target_c.cuda(non_blocking=True)
+                    output_c, features_c = model(input_c)
+
+                    new_output = torch.nn.functional.sigmoid(output_c)
+                    # new_output = new_output.cuda(non_blocking=True).squeeze()
+
+                    # loss += (batch_distillation_criterion(new_output, old_output[i])/num_data).data
+                    loss += (batch_distillation_criterion(new_output, old_output[i])/num_coreset_data)
+
+            # compute gradient and do SGD step
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
             # compute gradient and do SGD step
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
 
-        # coreset data
-        coreset_loader = torch.utils.data.DataLoader(
-            coreset, batch_size=batch_size, shuffle=False,
-            num_workers=workers, pin_memory=True)
 
-        for i, (input, target) in enumerate(coreset_loader):
-            target = target.cuda(non_blocking=True)
-            output, features = model(input)
+        if distillation_merged != True:
+            for i, (input, target) in enumerate(coreset_loader):
+                target = target.cuda(non_blocking=True)
+                output, features = model(input)
 
-            new_output = torch.nn.functional.sigmoid(output)
-            # new_output = new_output.cuda(non_blocking=True).squeeze()
+                new_output = torch.nn.functional.sigmoid(output)
+                # new_output = new_output.cuda(non_blocking=True).squeeze()
 
-            # loss += (batch_distillation_criterion(new_output, old_output[i])/num_data).data
-            loss = distillation_criterion(new_output, old_output[i])
+                # loss += (batch_distillation_criterion(new_output, old_output[i])/num_data).data
+                loss = distillation_criterion(new_output, old_output[i])
 
-            # compute gradient and do SGD step
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+                # compute gradient and do SGD step
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
 
         # # compute gradient and do SGD step
         # optimizer.zero_grad()
