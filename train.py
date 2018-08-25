@@ -86,7 +86,7 @@ def main():
     batch_size = 32
     # batch_size = 256
     start_epoch = 0
-    epochs = 90
+    epochs = 20
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
@@ -98,7 +98,7 @@ def main():
     freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_sgd_lr_1e-2_e90_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_sgd_lr_1e-2_e20_b_32_0.pth'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'best_ckpt.pth'
 
@@ -107,7 +107,7 @@ def main():
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_sgd_lr_1e-2_e90_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_sgd_lr_1e-2_e20_b_32_0.txt'
     ############################################
 
     ## model
