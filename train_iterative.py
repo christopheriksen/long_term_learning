@@ -118,23 +118,23 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = None
+    selection_method = 'kmedoids'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-2_e10_b_32_3.pth'
-    # weights_save_name = 'resnet18_imagenet_cifar100_iter_kmedoids_norm_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.pth'
+    # weights_save_name = 'resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-2_e10_b_32_4.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_kmedoids_norm_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_100_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
-    load_order = False
-    subset_instance_order_file = 'cifar100_instance_order_3.txt'
+    load_order = True
+    subset_instance_order_file = 'cifar100_instance_order_0.txt'
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/cifar100/resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-2_e10_b_32_3.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/cifar100/resnet18_imagenet_cifar100_iter_kmedoids_norm_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
