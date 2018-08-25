@@ -95,10 +95,10 @@ def main():
     load_ckpt = False
     imagenet_finetune = True
     imagenet_normalization = True
-    freeze_weights = False
+    freeze_weights = True
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_rgbd_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_freeze_rgbd_sgd_lr_1e-2_e10_b_32_0.pth'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'best_ckpt.pth'
 
@@ -107,7 +107,7 @@ def main():
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/rgbd/resnet18_imagenet_rgbd_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/rgbd/resnet18_imagenet_freeze_rgbd_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
