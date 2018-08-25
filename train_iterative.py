@@ -105,7 +105,7 @@ def main():
 
     distillation = False
     distillation_merged = False
-    use_ewc = True
+    use_ewc = False
     # ewc_mode = 'class'
     # ewc_mode = 'dataset'
     # ewc_mode = 'consolidated'
@@ -118,12 +118,12 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = None
+    selection_method = 'kmedoids'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    # weights_save_name = 'resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_100_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_kmedoids_norm_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.pth'
+    # weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_100_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -133,7 +133,7 @@ def main():
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_ewc_lambda_100_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_kmedoids_norm_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -715,15 +715,15 @@ def main():
 
     for accuracy in cum_train_accuracies:
         f.write(str(accuracy))
-        f.write ('\n')
+        f.write (', ')
     f.write ('\n')
     for accuracy in first_train_accuracies:
         f.write(str(accuracy))
-        f.write ('\n')
+        f.write (', ')
     f.write('\n')
     for accuracy in test_accuracies:
         f.write(str(accuracy))
-        f.write ('\n')
+        f.write (', ')
     f.write('\n')
 
 
