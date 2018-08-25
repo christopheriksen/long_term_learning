@@ -103,7 +103,7 @@ def main():
     imagenet_normalization = True
     freeze_weights = False
 
-    distillation = True
+    distillation = False
     distillation_merged = False
     use_ewc = False
     # ewc_mode = 'class'
@@ -118,11 +118,11 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = 'mean_approx'
+    selection_method = 'kmedoids'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_kmedoids_norm_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_1_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
@@ -133,7 +133,7 @@ def main():
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_kmedoids_norm_subsetsize_10_dic_50_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -542,6 +542,8 @@ def main():
                 else:
                     combined_train_dataset = train_dataset
 
+            print ("Len of comb dataset: " + str(len(combined_train_dataset)))
+
             exemplar_pool_loader = torch.utils.data.DataLoader(
                 combined_train_dataset, batch_size=1, shuffle=False,
                 num_workers=workers, pin_memory=True)
@@ -585,6 +587,8 @@ def main():
                 for class_index in range(num_classes):
 
                     if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
+
+                        print ("something")
 
                         # calculate distance matrix
                         distances = pairwise_distances(features_by_class[class_index], metric=dist_metric)
