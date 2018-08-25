@@ -49,7 +49,7 @@ def main():
     # arch = 'resnet101'
     # arch = 'resnet152'
 
-    # pretrained_model = True
+    pretrained_model = False
     # arch = 'inceptionresnetv2'
 
     # SGD
