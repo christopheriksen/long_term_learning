@@ -443,9 +443,10 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
                 combined_train_dataset, batch_size=batch_size, shuffle=True,
                 num_workers=workers, pin_memory=True)
 
-        # train_loader = torch.utils.data.DataLoader(
-        #     train_dataset, batch_size=batch_size, shuffle=True,
-        #     num_workers=workers, pin_memory=True)
+        if use_ewc == True:
+            train_loader = torch.utils.data.DataLoader(
+                train_dataset, batch_size=batch_size, shuffle=True,
+                num_workers=workers, pin_memory=True)
 
 
         if distillation:
@@ -1141,11 +1142,11 @@ if __name__ == '__main__':
     print ('Argument List:', str(sys.argv))
 
     selection_method = sys.argv[1]
-    distillation = bool(sys.argv[2])
-    use_ewc = bool(sys.argv[3])
+    distillation = bool(int(sys.argv[2]))
+    use_ewc = bool(int(sys.argv[3]))
     ewc_lambda = float(sys.argv[4])
     weights_save_name = sys.argv[5]
     order_number = int(sys.argv[6])
     accuracies_file = sys.argv[7]
-    normalize_features = sys.argv[8]
+    normalize_features = bool(int(sys.argv[8]))
     main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, order_number, accuracies_file, normalize_features)
