@@ -606,10 +606,11 @@ def main():
                         print (features_by_class[class_index].shape)
                         features_by_class[class_index] = features_by_class[class_index].T
                         print(features_by_class[class_index].shape)
-                        print ()
                                       
                         # Herding procedure : ranking of the potential exemplars
                         mu  = np.mean(features_by_class[class_index],axis=1)
+                        print (mu.shape)
+                        print ()
                         w_t = mu
                         iter_herding     = 0
                         iter_herding_eff = 0
