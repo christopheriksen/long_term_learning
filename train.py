@@ -107,7 +107,7 @@ def main():
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_rgbd_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/rgbd/resnet18_imagenet_rgbd_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
