@@ -131,9 +131,9 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
     best_ckpt_save_name = 'model_best.pth.tar'
 
     load_order = True
-    subset_instance_order_file = 'cifar100_instance_order_' + str(order_number) + '.txt'
-    # subset_instance_order_file = 'instance_order_0.txt'
-    # test_instances_file = 'test_instances_0.txt'
+    # subset_instance_order_file = 'cifar100_instance_order_' + str(order_number) + '.txt'
+    subset_instance_order_file = 'instance_order_' + str(order_number) + '.txt'
+    test_instances_file = 'test_instances_' + str(order_number) + '.txt'
 
     # accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/cifar100/resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
