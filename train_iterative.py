@@ -584,9 +584,9 @@ def main():
 
                 for class_index in range(num_classes):
 
-                    if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
+                    print (indices_by_class[class_index].shape[0])
 
-                        print ("something")
+                    if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
 
                         # calculate distance matrix
                         distances = pairwise_distances(features_by_class[class_index], metric=dist_metric)
