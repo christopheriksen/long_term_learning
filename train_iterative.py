@@ -103,13 +103,13 @@ def main():
     imagenet_normalization = True
     freeze_weights = False
 
-    distillation = True
+    distillation = False
     distillation_merged = False
-    use_ewc = False
+    use_ewc = True
     # ewc_mode = 'class'
     # ewc_mode = 'dataset'
     # ewc_mode = 'consolidated'
-    ewc_lambda = 1.0
+    ewc_lambda = 100.0
 
     num_subsets = 10
     instances_per_subset = 10
@@ -118,12 +118,12 @@ def main():
     num_exemplars_per_class = int(dictionary_size/num_classes)
     normalize_features = True
 
-    selection_method = 'mean_approx'
+    selection_method = None
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.pth'
-    # weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_1_sgd_lr_1e-2_e10_b_32_0.pth'
+    # weights_save_name = 'resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_100_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
@@ -133,7 +133,7 @@ def main():
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_mean_approx_norm_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_iter_ewc_lambda_100_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
