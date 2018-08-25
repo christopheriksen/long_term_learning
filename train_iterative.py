@@ -26,9 +26,10 @@ from PIL import Image
 from random import shuffle
 import kmedoids
 import csv
+import sys
 
 
-def main():
+def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, order_number, accuracies_file, normalize_features):
 
     ############ Modifiable ###################
     data_source_dir = '/media/scatha/Data/lifelong_object_learning/training_data'
@@ -43,11 +44,11 @@ def main():
 
     # dataset = 'imagenet'
     # dataset = 'cifar10'
-    dataset = 'cifar100'
-    # dataset = 'rgbd-object'
+    # dataset = 'cifar100'
+    dataset = 'rgbd-object'
 
-    # num_classes = 51
-    num_classes = 100
+    num_classes = 51
+    # num_classes = 100
 
 
     arch = 'resnet18'
@@ -103,38 +104,38 @@ def main():
     imagenet_normalization = True
     freeze_weights = False
 
-    distillation = True
+    # distillation = True
     distillation_merged = False
-    use_ewc = False
+    # use_ewc = False
     # ewc_mode = 'class'
     # ewc_mode = 'dataset'
     # ewc_mode = 'consolidated'
-    ewc_lambda = 100.0
+    # ewc_lambda = 100.0
 
     num_subsets = 10
     instances_per_subset = 10
     # dictionary_size = 2550
-    dictionary_size = 1000
+    dictionary_size = 5000
     num_exemplars_per_class = int(dictionary_size/num_classes)
-    normalize_features = True
+    # normalize_features = True
 
-    selection_method = 'random'
+    # selection_method = 'random'
     dist_metric = 'sqeuclidean'
 
     weights_load_name = 'example_load.pth'
     # weights_save_name = 'resnet18_imagenet_cifar100_iter_no_coreset_subsetsize_10_sgd_lr_1e-2_e10_b_32_4.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.pth'
+    # weights_save_name = 'resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name = 'resnet18_imagenet_cifar100_iter_ewc_lambda_100_sgd_lr_1e-2_e10_b_32_0.pth'
     # weights_save_name_base = 'resnet18_imagenet_cifar100_mean_approx_norm_sgd_1e-3_b256__50imgs_0_'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
     load_order = True
-    subset_instance_order_file = 'cifar100_instance_order_0.txt'
+    subset_instance_order_file = 'cifar100_instance_order_' + str(order_number) + '.txt'
     # subset_instance_order_file = 'instance_order_0.txt'
     # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/cifar100/resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.txt'
+    # accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/cifar100/resnet18_imagenet_cifar100_iter_random_distil_subsetsize_10_dic_10_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -1136,4 +1137,15 @@ def accuracy(output, target, topk=(1,)):
 
 
 if __name__ == '__main__':
-    main()
+    print ('Number of arguments:', len(sys.argv), 'arguments.')
+    print ('Argument List:', str(sys.argv))
+
+    selection_method = sys.argv[1]
+    distillation = bool(sys.argv[2])
+    use_ewc = bool(sys.argv[3])
+    ewc_lambda = float(sys.argv[4])
+    weights_save_name = sys.argv[5]
+    order_number = int(sys.argv[6])
+    accuracies_file = sys.argv[7]
+    normalize_features = sys.argv[8]
+    main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, order_number, accuracies_file, normalize_features)
