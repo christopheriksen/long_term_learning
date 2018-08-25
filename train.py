@@ -43,28 +43,33 @@ def main():
     num_classes = 100
 
 
-    # arch = 'resnet18'
+    arch = 'resnet18'
     # arch = 'resnet34'
     # arch = 'resnet50'
     # arch = 'resnet101'
     # arch = 'resnet152'
 
-    pretrained_model = True
-    arch = 'inceptionresnetv2'
+    pretrained_model = False
+    # arch = 'inceptionresnetv2'
 
     # SGD
-    # optimizer_method = 'sgd'
+    optimizer_method = 'sgd'
     # lr = 2.0
     # lr_dec_factor = 0.2
     # lr_dec_freq = 30
     # momentum = 0.0
     # weight_decay = 0.00001
-
     # lr = 0.01
     # lr_dec_factor = 0.1
     # lr_dec_freq = 30
     # momentum = 0.9
     # weight_decay = 1e-4
+    lr_dec_factor = 0.1
+    lr_dec_freq = 30
+
+    lr = 1e-2
+    momentum = 0.0
+    weight_decay = 0.0
 
     # # Adadelta
     # optimizer_method = 'adadelta'
@@ -75,13 +80,13 @@ def main():
     # momentum=0
     # centered=False
 
-    # RMSprop
-    optimizer_method = 'rmsprop'
+    # # RMSprop
+    # optimizer_method = 'rmsprop'
 
-    batch_size = 16
+    batch_size = 32
     # batch_size = 256
     start_epoch = 0
-    epochs = 5
+    epochs = 90
     print_freq = 10
     workers = 4
     cudnn_benchmark = True
@@ -90,18 +95,19 @@ def main():
     load_ckpt = False
     imagenet_finetune = True
     imagenet_normalization = True
-    freeze_weights = True
+    freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'inceptionresnetv2_cifar100_imagenet_freeze_rmsprop_lr0.001_e10_v1.pth'
-    ckpt_save_name = 'inceptionresnetv2_cifar100_imagenet_freeze_rmsprop_lr0.001_e10_v1_ckpt.pth'
-    best_ckpt_save_name = 'inceptionresnetv2_cifar100_imagenet_freeze_rmsprop_lr0.001_e10_v1_best_ckpt.pth'
+    weights_save_name = 'resnet18_imagenet_cifar100_sgd_lr_1e-2_e90_b_32_0.pth'
+    ckpt_save_name = 'ckpt.pth'
+    best_ckpt_save_name = 'best_ckpt.pth'
 
     load_order = True
-    subset_instance_order_file = 'instance_order_0.txt'
-    test_instances_file = 'test_instances_0.txt'
+    subset_instance_order_file = 'cifar100_instance_order_0.txt'
+    # subset_instance_order_file = 'instance_order_0.txt'
+    # test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/inceptionresnetv2_cifar100_imagenet_freeze_rmsprop_lr0.001_e10_v1.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_sgd_lr_1e-2_e90_b_32_0.txt'
     ############################################
 
     ## model
@@ -308,7 +314,7 @@ def main():
     # early_stopping_buffer = []
     # early_stopping_buffer.append(best_prec1)
 
-    # train_accuracies = []
+    train_accuracies = []
     val_accuracies = []
 
     for epoch in range(start_epoch, epochs):
@@ -323,10 +329,10 @@ def main():
         # evaluate on validation set
         # prec1 = validate(val_loader, model, criterion, print_freq)
 
-        # train_accuracy = validate(train_loader, model, criterion, print_freq).data.cpu().numpy()
+        train_accuracy = validate(train_loader, model, criterion, print_freq).data.cpu().numpy()
         val_accuracy = validate(val_loader, model, criterion, print_freq).data.cpu().numpy()
 
-        # train_accuracies.append(train_accuracy)
+        train_accuracies.append(train_accuracy)
         val_accuracies.append(val_accuracy)
 
 
@@ -374,10 +380,10 @@ def main():
     # save accuracies
     f = open(accuracies_file, "w")
 
-    # for accuracy in train_accuracies:
-    #     f.write(str(accuracy))
-    #     f.write ('\n')
-    # f.write ('\n')
+    for accuracy in train_accuracies:
+        f.write(str(accuracy))
+        f.write ('\n')
+    f.write ('\n')
     for accuracy in val_accuracies:
         f.write(str(accuracy))
         f.write ('\n')
