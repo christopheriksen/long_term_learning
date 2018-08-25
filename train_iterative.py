@@ -543,8 +543,6 @@ def main():
                 else:
                     combined_train_dataset = train_dataset
 
-            print ("Len of comb dataset: " + str(len(combined_train_dataset)))
-
             exemplar_pool_loader = torch.utils.data.DataLoader(
                 combined_train_dataset, batch_size=1, shuffle=False,
                 num_workers=workers, pin_memory=True)
@@ -553,12 +551,7 @@ def main():
             indices_by_class = [[] for i in range(num_classes)]
             features_by_class = [[] for i in range(num_classes)]
 
-            print (indices_by_class)
-            print (features_by_class)
-
             for index, (input_img, target) in enumerate(exemplar_pool_loader):
-
-                print ("iter")
 
                 output, features = model(input_img)
 
@@ -576,11 +569,6 @@ def main():
             for class_index in range(num_classes):
                 indices_by_class[class_index] = np.array(indices_by_class[class_index])
                 features_by_class[class_index] = np.array(features_by_class[class_index])
-
-            print (indices_by_class)
-            print (features_by_class)
-
-            print ("a")
 
 
             # selection procedure
