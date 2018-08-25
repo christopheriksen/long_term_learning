@@ -314,7 +314,7 @@ def main():
     # early_stopping_buffer = []
     # early_stopping_buffer.append(best_prec1)
 
-    train_accuracies = []
+    # train_accuracies = []
     val_accuracies = []
 
     for epoch in range(start_epoch, epochs):
@@ -329,10 +329,10 @@ def main():
         # evaluate on validation set
         # prec1 = validate(val_loader, model, criterion, print_freq)
 
-        train_accuracy = validate(train_loader, model, criterion, print_freq).data.cpu().numpy()
+        # train_accuracy = validate(train_loader, model, criterion, print_freq).data.cpu().numpy()
         val_accuracy = validate(val_loader, model, criterion, print_freq).data.cpu().numpy()
 
-        train_accuracies.append(train_accuracy)
+        # train_accuracies.append(train_accuracy)
         val_accuracies.append(val_accuracy)
 
 
@@ -380,10 +380,10 @@ def main():
     # save accuracies
     f = open(accuracies_file, "w")
 
-    for accuracy in train_accuracies:
-        f.write(str(accuracy))
-        f.write ('\n')
-    f.write ('\n')
+    # for accuracy in train_accuracies:
+    #     f.write(str(accuracy))
+    #     f.write ('\n')
+    # f.write ('\n')
     for accuracy in val_accuracies:
         f.write(str(accuracy))
         f.write ('\n')
