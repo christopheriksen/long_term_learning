@@ -36,11 +36,11 @@ def main():
 
     # dataset = "imagenet"
     # dataset = "cifar10"
-    dataset = "cifar100"
-    # dataset = "rgbd-object"
+    # dataset = "cifar100"
+    dataset = "rgbd-object"
 
-    # num_classes = 51
-    num_classes = 100
+    num_classes = 51
+    # num_classes = 100
 
 
     arch = 'resnet18'
@@ -49,7 +49,7 @@ def main():
     # arch = 'resnet101'
     # arch = 'resnet152'
 
-    pretrained_model = False
+    # pretrained_model = True
     # arch = 'inceptionresnetv2'
 
     # SGD
@@ -80,7 +80,7 @@ def main():
     # momentum=0
     # centered=False
 
-    # # RMSprop
+    # RMSprop
     # optimizer_method = 'rmsprop'
 
     batch_size = 32
@@ -98,16 +98,16 @@ def main():
     freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_cifar100_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_rgbd_sgd_lr_1e-2_e10_b_32_0.pth'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'best_ckpt.pth'
 
     load_order = True
-    subset_instance_order_file = 'cifar100_instance_order_0.txt'
-    # subset_instance_order_file = 'instance_order_0.txt'
-    # test_instances_file = 'test_instances_0.txt'
+    # subset_instance_order_file = 'cifar100_instance_order_0.txt'
+    subset_instance_order_file = 'instance_order_0.txt'
+    test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_cifar100_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/resnet18_imagenet_rgbd_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
