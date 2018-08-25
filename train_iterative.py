@@ -103,7 +103,7 @@ def main():
     imagenet_normalization = True
     freeze_weights = False
 
-    distillation = False
+    distillation = True
     distillation_merged = False
     use_ewc = False
     # ewc_mode = 'class'
