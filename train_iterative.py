@@ -29,7 +29,7 @@ import csv
 import sys
 
 
-def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, order_number, accuracies_file, normalize_features):
+def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, order_number, accuracies_file, normalize_features, train_batch, load_order):
 
     ############ Modifiable ###################
     data_source_dir = '/media/scatha/Data/lifelong_object_learning/training_data'
@@ -130,7 +130,7 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
-    load_order = True
+    # load_order = True
     # subset_instance_order_file = 'cifar100_instance_order_' + str(order_number) + '.txt'
     subset_instance_order_file = 'instance_order_' + str(order_number) + '.txt'
     test_instances_file = 'test_instances_' + str(order_number) + '.txt'
@@ -488,6 +488,9 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
 
             if use_ewc:
                 train_ewc(train_loader, model, criterion, optimizer, epoch, print_freq, fisher, optpar, ewc_lambda, subset_iter)
+
+            if train_batch:
+                train(cum_train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
             # train for one epoch
             if (distillation != True) and (use_ewc != True):
@@ -1149,4 +1152,6 @@ if __name__ == '__main__':
     order_number = int(sys.argv[6])
     accuracies_file = sys.argv[7]
     normalize_features = bool(int(sys.argv[8]))
-    main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, order_number, accuracies_file, normalize_features)
+    train_batch = bool(int(sys.argv[9]))
+    load_order = bool(int(sys.argv[10]))
+    main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, order_number, accuracies_file, normalize_features, train_batch, load_order)
