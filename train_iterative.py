@@ -27,12 +27,13 @@ from random import shuffle
 import kmedoids
 import csv
 import sys
+from sklearn.decomposition import PCA
 
 
-def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, order_number, accuracies_file, normalize_features, train_batch, load_order):
+def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, accuracies_file, normalize_features, train_batch, use_dim_red, order_number, dictionary_size):
 
     ############ Modifiable ###################
-    data_source_dir = '/media/scatha/Data/lifelong_object_learning/training_data'
+    data_source_dir = '/media/scatha/Data1/lifelong_object_learning/training_data'
     # data_source_dir = '/media/ceriksen/Elements/Data/training_data'
 
     weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
@@ -115,7 +116,7 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
     num_subsets = 10
     instances_per_subset = 10
     # dictionary_size = 2550
-    dictionary_size = 5000
+    # dictionary_size = 5000
     num_exemplars_per_class = int(dictionary_size/num_classes)
     # normalize_features = True
 
@@ -130,7 +131,7 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'model_best.pth.tar'
 
-    # load_order = True
+    load_order = True
     # subset_instance_order_file = 'cifar100_instance_order_' + str(order_number) + '.txt'
     subset_instance_order_file = 'instance_order_' + str(order_number) + '.txt'
     test_instances_file = 'test_instances_' + str(order_number) + '.txt'
@@ -408,6 +409,8 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
 
     for subset_iter in range(num_subsets):
 
+        print ("Subset iter: " + str(subset_iter))
+
         train_dataset = train_datasets_by_subset[subset_iter]
         val_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=batch_size, shuffle=True,
@@ -447,6 +450,11 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
             train_loader = torch.utils.data.DataLoader(
                 train_dataset, batch_size=batch_size, shuffle=True,
                 num_workers=workers, pin_memory=True)
+
+        if train_batch:
+            # new model
+            model = models.resnet18(pretrained=True, new_num_classes=num_classes)
+            model = torch.nn.DataParallel(model).cuda()
 
 
         if distillation:
@@ -493,7 +501,7 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
                 train(cum_train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
             # train for one epoch
-            if (distillation != True) and (use_ewc != True):
+            if (distillation != True) and (use_ewc != True) and (train_batch != True):
                 train(train_loader, model, criterion, optimizer, epoch, print_freq, ewc=None)
 
             # # evaluate on validation set
@@ -557,25 +565,58 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
             indices_by_class = [[] for i in range(num_classes)]
             features_by_class = [[] for i in range(num_classes)]
 
-            for index, (input_img, target) in enumerate(exemplar_pool_loader):
+            if use_dim_red:
 
-                output, features = model(input_img)
+                # learn pca
+                values = []
+                for index, (input_img, target) in enumerate(exemplar_pool_loader):
+                    output, features = model(input_img)
+                    features = features.data.cpu().numpy()[0]
+                    if normalize_features:
+                        features = features/np.linalg.norm(features)
+                    values.append(features)
+                values = np.array(values)
 
-                target = target.cuda(non_blocking=True)
-                target = target.data.cpu().numpy()[0]
-                features = features.data.cpu().numpy()[0]
+                # pca = PCA(n_components=1536)
+                pca = PCA(n_components='mle')
+                pca.fit(values)
 
-                indices_by_class[target].append(index)
+                # group features by class, applying pca
+                for index, (input_img, target) in enumerate(exemplar_pool_loader):
 
-                if normalize_features:
-                    features = features/np.linalg.norm(features)
-                features_by_class[target].append(features)
+                    output, features = model(input_img)
+
+                    target = target.cuda(non_blocking=True)
+                    target = target.data.cpu().numpy()[0]
+                    features = features.data.cpu().numpy()[0]
+
+                    indices_by_class[target].append(index)
+
+                    if normalize_features:
+                        features = features/np.linalg.norm(features)
+
+                    features = pca.transform(features)
+                    features_by_class[target].append(features)
+
+            else:
+                for index, (input_img, target) in enumerate(exemplar_pool_loader):
+
+                    output, features = model(input_img)
+
+                    target = target.cuda(non_blocking=True)
+                    target = target.data.cpu().numpy()[0]
+                    features = features.data.cpu().numpy()[0]
+
+                    indices_by_class[target].append(index)
+
+                    if normalize_features:
+                        features = features/np.linalg.norm(features)
+                    features_by_class[target].append(features)
 
 
             for class_index in range(num_classes):
                 indices_by_class[class_index] = np.array(indices_by_class[class_index])
                 features_by_class[class_index] = np.array(features_by_class[class_index])
-
 
             # selection procedure
             exemplar_indices_by_class = [[] for i in range(num_classes)]
@@ -711,7 +752,7 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
     torch.save(model.state_dict(), weights_dir + weights_save_name)
 
 
-    test_accuracy = validate(test_loader, model, criterion, print_freq)
+    # test_accuracy = validate(test_loader, model, criterion, print_freq)
     # cum_train_accuracy = validate(cum_train_loader, model, criterion, print_freq)
 
 
@@ -1149,9 +1190,10 @@ if __name__ == '__main__':
     use_ewc = bool(int(sys.argv[3]))
     ewc_lambda = float(sys.argv[4])
     weights_save_name = sys.argv[5]
-    order_number = int(sys.argv[6])
-    accuracies_file = sys.argv[7]
-    normalize_features = bool(int(sys.argv[8]))
-    train_batch = bool(int(sys.argv[9]))
-    load_order = bool(int(sys.argv[10]))
-    main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, order_number, accuracies_file, normalize_features, train_batch, load_order)
+    accuracies_file = sys.argv[6]
+    normalize_features = bool(int(sys.argv[7]))
+    train_batch = bool(int(sys.argv[8]))
+    use_dim_red = bool(int(sys.argv[9]))
+    order_number = int(sys.argv[10])
+    dictionary_size = int(sys.argv[11])
+    main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, accuracies_file, normalize_features, train_batch, use_dim_red, order_number, dictionary_size)
