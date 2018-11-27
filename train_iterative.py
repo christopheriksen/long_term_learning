@@ -30,7 +30,7 @@ import sys
 from sklearn.decomposition import PCA
 
 
-def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, accuracies_file, normalize_features, train_batch, use_dim_red, order_number, dictionary_size):
+def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, accuracies_file, normalize_features, weight_features, train_batch, use_dim_red, num_dim_red_components, order_number, dictionary_size):
 
     ############ Modifiable ###################
     data_source_dir = '/media/scatha/Data1/lifelong_object_learning/training_data'
@@ -578,7 +578,7 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
                 values = np.array(values)
 
                 # pca = PCA(n_components=1536)
-                pca = PCA(n_components='mle')
+                pca = PCA(n_components=num_dim_red_components)
                 pca.fit(values)
 
                 # group features by class, applying pca
@@ -594,9 +594,13 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
 
                     if normalize_features:
                         features = features/np.linalg.norm(features)
-
-                    features = pca.transform(features)
                     features_by_class[target].append(features)
+                    
+                for class_index in range(num_classes):
+                    indices_by_class[class_index] = np.array(indices_by_class[class_index])
+                    features_by_class[class_index] = np.array(features_by_class[class_index])
+                    if features_by_class[class_index].shape[0] > 0:
+                        features_by_class[class_index] = pca.transform(features_by_class[class_index])
 
             else:
                 for index, (input_img, target) in enumerate(exemplar_pool_loader):
@@ -613,10 +617,10 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
                         features = features/np.linalg.norm(features)
                     features_by_class[target].append(features)
 
+                for class_index in range(num_classes):
+                    indices_by_class[class_index] = np.array(indices_by_class[class_index])
+                    features_by_class[class_index] = np.array(features_by_class[class_index])
 
-            for class_index in range(num_classes):
-                indices_by_class[class_index] = np.array(indices_by_class[class_index])
-                features_by_class[class_index] = np.array(features_by_class[class_index])
 
             # selection procedure
             exemplar_indices_by_class = [[] for i in range(num_classes)]
@@ -633,8 +637,17 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
 
                     if (indices_by_class[class_index].shape[0] > num_exemplars_per_class):
 
+                        if weight_features:
+                            weights = model.module.fc.weight
+                            class_weights = weights.data.cpu().numpy()[class_index]
+                            class_weights = np.absolute(class_weights)
+                            normalized_class_weights = class_weights/np.linalg.norm(class_weights)
+                            distance_weights = normalized_class_weights
+                        else:
+                            distance_weights = None
+
                         # calculate distance matrix
-                        distances = pairwise_distances(features_by_class[class_index], metric=dist_metric)
+                        distances = pairwise_distances(features_by_class[class_index], metric=dist_metric, n_jobs=1, w=distance_weights)
                         M, C = kmedoids.kMedoids(distances, num_exemplars_per_class)
 
                         for index in M:
@@ -747,9 +760,31 @@ def main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name,
         # torch.save(model.state_dict(), weights_dir + weights_save_name)
 
 
-    # save model
-    print ("Saving model")
-    torch.save(model.state_dict(), weights_dir + weights_save_name)
+    # # save model
+    # print ("Saving model")
+    # torch.save(model.state_dict(), weights_dir + weights_save_name)
+
+    # # write coreset images to file
+    # exemplar_pool_loader = torch.utils.data.DataLoader(
+    #     exemplar_dataset, batch_size=1, shuffle=False,
+    #     num_workers=workers, pin_memory=True)
+
+    # output_by_class = [[] for i in range(num_classes)]
+    # for index, (input_img, target) in enumerate(exemplar_pool_loader):
+
+    #     output, features = model(input_img)
+
+    #     target = target.cuda(non_blocking=True)
+    #     target = target.data.cpu().numpy()[0]
+    #     output = output.data.cpu().numpy()[0]
+
+    #     # un-normalize output
+
+    #     output_by_class[target].append(output)
+
+    # for class_index in range(num_classes):
+    #     for i in range(len(output_by_class[class_index])):
+    #         output_img_name = output_img_base + str(class_index) + '/' + str(class_index) + '_' + str(i) + '.jpg'
 
 
     # test_accuracy = validate(test_loader, model, criterion, print_freq)
@@ -1192,8 +1227,10 @@ if __name__ == '__main__':
     weights_save_name = sys.argv[5]
     accuracies_file = sys.argv[6]
     normalize_features = bool(int(sys.argv[7]))
-    train_batch = bool(int(sys.argv[8]))
-    use_dim_red = bool(int(sys.argv[9]))
-    order_number = int(sys.argv[10])
-    dictionary_size = int(sys.argv[11])
-    main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, accuracies_file, normalize_features, train_batch, use_dim_red, order_number, dictionary_size)
+    weight_features = bool(int(sys.argv[8]))
+    train_batch = bool(int(sys.argv[9]))
+    use_dim_red = bool(int(sys.argv[10]))
+    num_dim_red_components = int(sys.argv[11])
+    order_number = int(sys.argv[12])
+    dictionary_size = int(sys.argv[13])
+    main(selection_method, distillation, use_ewc, ewc_lambda, weights_save_name, accuracies_file, normalize_features, weight_features, train_batch, use_dim_red, num_dim_red_components, order_number, dictionary_size)

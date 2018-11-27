@@ -24,7 +24,7 @@ import models
 def main():
 
     ############ Modifiable ###################
-    data_source_dir = '/media/scatha/Data/lifelong_object_learning/training_data'
+    data_source_dir = '/media/scatha/Data1/lifelong_object_learning/training_data'
     # data_source_dir = '/media/ceriksen/Elements/Data/training_data'
 
     weights_dir = '/home/scatha/lifelong_object_learning/long_term_learning/weights/'
@@ -48,6 +48,9 @@ def main():
     # arch = 'resnet50'
     # arch = 'resnet101'
     # arch = 'resnet152'
+
+    # arch = 'alexnet'
+    # arch = 'vgg'
 
     pretrained_model = False
     # arch = 'inceptionresnetv2'
@@ -95,10 +98,10 @@ def main():
     load_ckpt = False
     imagenet_finetune = True
     imagenet_normalization = True
-    freeze_weights = True
+    freeze_weights = False
 
     weights_load_name = 'example_load.pth'
-    weights_save_name = 'resnet18_imagenet_freeze_rgbd_sgd_lr_1e-2_e10_b_32_0.pth'
+    weights_save_name = 'resnet18_imagenet_rgbd_sgd_lr_1e-2_e10_b_32_0.pth'
     ckpt_save_name = 'ckpt.pth'
     best_ckpt_save_name = 'best_ckpt.pth'
 
@@ -107,7 +110,7 @@ def main():
     subset_instance_order_file = 'instance_order_0.txt'
     test_instances_file = 'test_instances_0.txt'
 
-    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/rgbd/resnet18_imagenet_freeze_rgbd_sgd_lr_1e-2_e10_b_32_0.txt'
+    accuracies_file = '/home/scatha/lifelong_object_learning/long_term_learning/accuracies/rgbd/resnet18_imagenet_rgbd_sgd_lr_1e-2_e10_b_32_0.txt'
     ############################################
 
     ## model
@@ -126,6 +129,16 @@ def main():
     #     model = models.resnet101(num_classes=num_classes)
     # if arch == 'resnet152':
     #     model = models.resnet152(num_classes=num_classes)
+    if arch == 'alexnet':
+        if imagenet_finetune:
+            model = models.alexnet(pretrained=True, new_num_classes=num_classes)
+        else:
+            model = models.alexnet(num_classes=num_classes)
+    if arch == 'vgg':
+        if imagenet_finetune:
+            model = models.vgg16_bn(pretrained=True, new_num_classes=num_classes)
+        else:
+            model = models.vgg16_bn(num_classes=num_classes)
 
     if pretrained_model:
         if arch == 'inceptionresnetv2':
@@ -275,8 +288,8 @@ def main():
                 normalization_params = [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]      # ImageNet pretrain pretrainedmodels
             else:
                 # normalization_params = None
-                # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
-                normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
+                normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+                # normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
                 # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
         else:
@@ -285,8 +298,8 @@ def main():
                 normalization_params = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]      # ImageNet pretrain torchvision
             else:
                 # normalization_params = None
-                # normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
-                normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
+                normalization_params = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+                # normalization_params = [[0.52728295, 0.498189, 0.48457545], [1.0, 1.0, 1.0]]
                 # normalization_params = [[0.52728295, 0.498189, 0.48457545], [0.17303562, 0.18130174, 0.20389825]]
 
         if load_order:
@@ -295,6 +308,9 @@ def main():
         else:
             train_dataset = utils.load_rgbd_batch(data_dir, img_size, normalization_params)
             val_dataset = train_dataset
+
+        # print ("Num imgs")
+        # print (len(train_dataset))
 
 
 
